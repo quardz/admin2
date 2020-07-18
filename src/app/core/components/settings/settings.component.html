@@ -4,5 +4,5 @@
 </div>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
-  <button type="submit" class="btn btn-primary btn-md">{{ submit_text }}</button>
+  <button type="submit" class="btn btn-primary btn-md" [disabled]="!form.valid">{{ submit_text }}</button>
 </form>

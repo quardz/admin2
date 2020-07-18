@@ -9,8 +9,8 @@ import * as _ from 'underscore';
 })
 export class WpcoreService {
 
-  dbData: any;
-  dbStatus: number;
+  public dbData: any;
+  dbStatus: number; 
   loaded: boolean = false;
   URLs: Array<any> = []; //link, component, entity = posts/users, type = post/page, parameters as obj
   mapIndex_Pk: Array<any> = []; // It contains the map between primary key and index
@@ -283,6 +283,10 @@ export class WpcoreService {
       return this.dbData.options[option_id];
     }
     return _default;
+  }
+
+  setOption(option_id: number|string, value: any = '') {
+    this.dbData.options[option_id] = value;
   }
 
   getMetadata(meta_key:string, entity: any){

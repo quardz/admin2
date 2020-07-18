@@ -2,6 +2,10 @@ import { Component, OnInit,Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import * as _ from 'underscore';
+import { ToastrService } from 'ngx-toastr';
+
+
+import { WpcoreService } from '../../wpcore.service';
 
 
 interface LooseObject {
@@ -26,7 +30,7 @@ export class SettingsComponent implements OnInit {
   @Input() submit_text: String = 'Submit';
 
 
-  constructor() { 
+  constructor(public wpcore: WpcoreService, public toastr: ToastrService) { 
 
     if(!this.form) {
       this.form = new FormGroup({});  
@@ -43,9 +47,7 @@ export class SettingsComponent implements OnInit {
             type: 'text',
             placeholder: 'Website name',
             required: true,
-            settings: {
-              default: 'Your Site name',
-            }            
+            _default_value: 'Your Site name',
           },
 
         },
@@ -162,48 +164,54 @@ export class SettingsComponent implements OnInit {
         {
           key: 'start_of_week',
           type: 'select',
-          defaultValue: '1',
+          defaultValue: 1,
           wrappers: ['form-field-horizontal'],
           templateOptions: {
             label: 'Week Starts On',
             required: false,
             options: [
-              { label: 'Sunday', value: '0' },
-              { label: 'Monday', value: '1' },
-              { label: 'Tuesday', value: '2' },
-              { label: 'Wednesday', value: '3' },
-              { label: 'Thursday', value: '4' },
-              { label: 'Friday', value: '5' },
-              { label: 'Saturday', value: '6' },
+              { label: 'Sunday', value: 0 },
+              { label: 'Monday', value: 1 },
+              { label: 'Tuesday', value: 2 },
+              { label: 'Wednesday', value: 3 },
+              { label: 'Thursday', value: 4 },
+              { label: 'Friday', value: 5 },
+              { label: 'Saturday', value: 6 },
             ],
           },
         }, 
       ];
     }
   
-    if(!this.model || true) {
-      this.model = {};
-      //_k: string;
-      //this.model = {[_k]: any};
-      if(this.fields) {
-        for(let _i in this.fields) {
-          let _key:string = String(this.fields[_i].key);
-          if(_key) {
-            //this.model[_key] = (this.fields[_i].templateOptions.settings.default) ? this.fields[_i].templateOptions.settings.default : 'yean';
+    // Load default values to model
+
+    if(this.fields) {
+      for(let _i in this.fields) {
+        let _key:string = String(this.fields[_i].key);
+        let _has_model_field = _.has(this.model, _key);
+        if(_key && (!_has_model_field || (_has_model_field && this.model._key)) ) {
+          var _default_value = wpcore.getOption(_key);
+
+          if(!_default_value && _.has(this.fields[_i], 'templateOptions') && _.has(this.fields[_i].templateOptions, '_default_value')) {
+            _default_value = this.fields[_i].templateOptions._default_value;
           }
-          
-          //this.model[this.fields[_i].key] = 
+          this.model[_key] = _default_value;
         }
       }
-
     }
-    console.log("model ",this.model);
+
   }
 
 
   
   onSubmit() {
-    console.log(this.model);
+    if(this.model) {
+      for(let _key in this.model) {
+        this.wpcore.setOption(_key, this.model[_key]);
+      }
+    }
+    this.toastr.success('Success!', 'Form saved successfully!');
+
   }
 
 
@@ -219,8 +227,9 @@ export class SettingsComponent implements OnInit {
 })
 export class SettingsGeneralComponent extends SettingsComponent implements OnInit {
 
-  constructor() { 
-    super(); 
+  constructor(public wpcore: WpcoreService, public toastr: ToastrService) { 
+    super(wpcore, toastr); 
+    this.page_title = 'General Settings';
   }
 
   ngOnInit(): void {
