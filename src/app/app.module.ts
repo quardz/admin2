@@ -19,7 +19,11 @@ import { SidebarComponent } from './core/components/sidebar/sidebar.component';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { TaxonomyComponent } from './core/components/taxonomy/taxonomy.component';
-import { SettingsComponent,SettingsGeneralComponent } from './core/components/settings/settings.component';
+import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
+  SettingsMediaComponent, SettingsPermalinkComponent, SettingsReadingComponent,
+  SettingsPrivacyComponent, SettingsWritingComponent,
+
+   } from './core/components/settings/settings.component';
 import { FormlyHorizontalWrapper } from './core/components/settings/horizontal-wrapper';
 
 var _formly_settings = {
@@ -45,7 +49,14 @@ export function WpDBProvider(wpcore: WpcoreService) {
     NavbarComponent,
     FooterComponent,
     TaxonomyComponent,
-    SettingsComponent, SettingsGeneralComponent,
+    SettingsComponent, 
+    SettingsGeneralComponent,
+    SettingsDiscussionComponent,
+    SettingsMediaComponent,
+    SettingsPermalinkComponent,
+    SettingsReadingComponent,
+    SettingsPrivacyComponent, 
+    SettingsWritingComponent,
     FormlyHorizontalWrapper,    
   ],
   imports: [

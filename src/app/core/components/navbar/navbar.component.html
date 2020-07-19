@@ -19,9 +19,22 @@
         <a href="#" class="nav-link"><i class="menu-icon mdi mdi-library-plus"></i> <span class="menu-title">New Post</span>
         </a>
       </li>
-
+ 
 
     </ul>
+
+    <ul class = "navbar-nav navbar-sites">
+      <li class="nav-item dropdown d-none d-xl-inline-block select-sites">
+      <select class="form-control form-tn" #cursite id="selectsite" (change)='sitesOnChange(cursite.value)'>
+        <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
+      </select>
+
+      </li>
+      <li>
+        <a class = "btn btn-primary btn-tn" (click) = 'host()'>Host to Blockchain</a>  
+      </li>
+    </ul>
+
     <ul class="navbar-nav navbar-nav-right">
       
       

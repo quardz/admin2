@@ -1,0 +1,13 @@
+.col-form-label {
+  color: #212529;
+  line-height: 1.3;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.hidechecklabel {
+  .col-form-label {
+    visibility: hidden;
+  }  
+}
+

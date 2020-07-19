@@ -67,6 +67,19 @@ html {
   visibility: hidden;
 }
 
+.page-title {
+    color: #555555;
+    margin-bottom: 30px;
+    font-size: 26px;
+    margin: 0.38rem 0 0.75rem;
+    font-weight: 100;
+}
+.form-group label {
+    font-size: 12px;
+    padding-top: 5px;
+}
+
+
 pre {
   background: color(gray-lighter);
   padding: 15px;

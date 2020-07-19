@@ -4,6 +4,15 @@ import { Observable, throwError, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import * as _ from 'underscore';
 
+interface ISites {
+  name?: string,
+  url?: string,
+  status?: number,
+  id?: string, //usually hash
+  platform?: string, //like arweave or s3 or inmemory etc
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,11 +25,43 @@ export class WpcoreService {
   mapIndex_Pk: Array<any> = []; // It contains the map between primary key and index
   archives: Array<any> = [];
   apiURL: string = '/db.json';
+  sitePublished: boolean = false;
+  sitePublishedTime: number = 0;
+  public sites: ISites[];
+
+
+
 
   constructor(private http: HttpClient) {
-
+    this.loadSites();
     this.resolveDataURL();
 
+  }
+
+  //@todo dynamic
+  public loadSites(){
+    this.sites = [
+      {
+        name: "Default Site", 
+        url: "localhost",
+        status: 1,
+        id: "ddffdd",
+        platform: "custom"
+      },
+    
+    
+      {
+        name: "New Site",
+        url: "localhost",
+        status: 0,
+        id: "frtghy",
+        platform: "new"
+      },
+    ];
+  }
+
+  addSite(site: ISites) {
+    this.sites.push(site);
   }
 
   //@todo whole stuff
@@ -28,9 +69,28 @@ export class WpcoreService {
     this.apiURL = '/db.json';
   }
 
+  public getSitePublishedStatus() {
+    return this.sitePublished;
+  }
+
+  public setSitePublishedStatus(status:boolean) {
+    this.sitePublished = status;
+    this.setSitePublishedTime(Math.round(+new Date()/1000));
+  }
+
+  public setSitePublishedTime(time:number) {
+    this.sitePublishedTime = time;
+  }
+
+  public getSitePublishedTime() {
+    return this.sitePublishedTime;
+  }  
+
   public getData() {  
     return this.dbData; 
   }
+
+
 
   load() { 
     return new Promise((resolve, reject) => {

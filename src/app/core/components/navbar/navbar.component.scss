@@ -3,6 +3,24 @@
 @import '../../../../styles';
 /* Navbar */
 
+.btn-tn {
+  padding: 3px 15px;
+  font-size: 12px;
+}
+.form-tn {
+    padding: 0px 10px;
+    height: 18px;
+    font-size: 13px;
+    font-weight: bold;
+}
+  
+
+.navbar-sites {
+  li {
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+  }
+}
 .navbar {
   font-family: $type-2;
   background: $dpdark;
