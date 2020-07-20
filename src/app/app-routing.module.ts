@@ -6,6 +6,9 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
   SettingsPrivacyComponent, SettingsWritingComponent
 } from './core/components/settings/settings.component';
 
+import { TaxonomyComponent, TaxonomyTableComponent } from './core/components/taxonomy/taxonomy.component';
+
+
 const routes: Routes = [
   { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
 
@@ -17,6 +20,10 @@ const routes: Routes = [
   { path: 'admin/settings/reading', component: SettingsReadingComponent },
   { path: 'admin/settings/privacy', component: SettingsPrivacyComponent },
   { path: 'admin/settings/writing', component: SettingsWritingComponent },    
+
+
+  { path: 'admin/posts/categories', component: TaxonomyComponent },    
+  
   
   
 

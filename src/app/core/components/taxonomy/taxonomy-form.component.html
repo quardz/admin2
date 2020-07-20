@@ -1,0 +1,6 @@
+<div class = "taxonomy-{{ taxonomy_machine_name }}">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
+  <button type="submit" class="btn btn-primary btn-md">Add New {{ taxonomy_name }}</button>
+</form>
+</div>

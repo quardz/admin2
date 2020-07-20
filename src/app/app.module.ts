@@ -4,7 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+
 
 //Third party import
 import { ToastrModule } from 'ngx-toastr';
@@ -15,16 +16,18 @@ import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { WpcoreService } from './core/wpcore.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { FormlyHorizontalWrapper } from './core/components/settings/horizontal-wrapper';
 import { SidebarComponent } from './core/components/sidebar/sidebar.component';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { FooterComponent } from './core/components/footer/footer.component';
-import { TaxonomyComponent } from './core/components/taxonomy/taxonomy.component';
+import { TaxonomyComponent, TaxonomyFormComponent, TaxonomyTableComponent } from './core/components/taxonomy/taxonomy.component';
 import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
   SettingsMediaComponent, SettingsPermalinkComponent, SettingsReadingComponent,
-  SettingsPrivacyComponent, SettingsWritingComponent,
+  SettingsPrivacyComponent, SettingsWritingComponent
 
    } from './core/components/settings/settings.component';
-import { FormlyHorizontalWrapper } from './core/components/settings/horizontal-wrapper';
+
+
 
 var _formly_settings = {
     wrappers: [{ name: 'form-field-horizontal', component: FormlyHorizontalWrapper }],
@@ -57,6 +60,9 @@ export function WpDBProvider(wpcore: WpcoreService) {
     SettingsReadingComponent,
     SettingsPrivacyComponent, 
     SettingsWritingComponent,
+    TaxonomyTableComponent,
+    TaxonomyFormComponent,
+    TaxonomyComponent,
     FormlyHorizontalWrapper,    
   ],
   imports: [
@@ -66,6 +72,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     ToastrModule.forRoot(), // ToastrModule added    
     AppRoutingModule,
     ReactiveFormsModule,
+    FormGroup,
     FormlyModule.forRoot(_formly_settings),
     FormlyBootstrapModule,
     HttpClientModule,
