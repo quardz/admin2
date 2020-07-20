@@ -2,7 +2,8 @@ import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Observable, throwError, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import * as _ from 'underscore';
+//import {}
+import * as _ from 'underscore'; 
 
 interface ISites {
   name?: string,
@@ -11,6 +12,7 @@ interface ISites {
   id?: string, //usually hash
   platform?: string, //like arweave or s3 or inmemory etc
 }
+
 
 
 @Injectable({
@@ -28,8 +30,8 @@ export class WpcoreService {
   sitePublished: boolean = false;
   sitePublishedTime: number = 0;
   public sites: ISites[];
-  entityIdTracker: any;
-
+  semaphore: any = {};
+  coreEntityTables = ['users', 'posts', 'terms'];
 
 
 
@@ -39,14 +41,33 @@ export class WpcoreService {
 
   }
 
-  public getLatestEntityId(entity_type?){
-    if(entity_type && this.entityIdTracker[entity_type]) {
-      return this.entityIdTracker;
+  public getSemaphore(entity_type:string = '', get_next:boolean = true){
+    if(entity_type && this.semaphore[entity_type]) {
+      if(get_next) {
+        return (parseInt(this.semaphore[entity_type]) + 1);
+      }
+      return this.semaphore[entity_type];
     }
-    return this.entityIdTracker;
+    return this.semaphore;
   }
 
-  
+  private generateSemaphore(){
+    console.log("semaphore starts", this.coreEntityTables, "Map pk",this.mapIndex_Pk);
+    for(let _index in this.coreEntityTables) {
+      let _entity_type = this.coreEntityTables[_index];
+      if(_.has(this.mapIndex_Pk, _entity_type)) {
+        var all_keys = _.map(_.allKeys(this.mapIndex_Pk[_entity_type]), Number);
+        if(all_keys) {
+          this.semaphore[_entity_type] = _.max(all_keys);
+        }
+      }
+    }
+  }
+
+  private setSemaphore(entity_type: string, entity_id: number) {
+    this.semaphore[entity_type] = entity_id;
+  }
+
 
   //@todo dynamic
   public loadSites(){
@@ -110,6 +131,7 @@ export class WpcoreService {
         .subscribe(response => {
           this.dbData = this.fixData(response);
           console.log("after loading and fixing", this.dbData);
+          this.getTaxonomyTree('category');//this is for test @todo remove
           this.dbStatus = 1;
           this.loaded = true;
           resolve(true);
@@ -124,7 +146,7 @@ export class WpcoreService {
     }
 
     var _data_copy = data;
-    var _metatables = ['users', 'posts', 'terms'];
+    var _metatables = this.coreEntityTables;
     var _term_urls = {};
 
     var tablePKs = {
@@ -158,6 +180,7 @@ export class WpcoreService {
           
         }
         data.terms[_t][12] = _path.replace(/\/$/, "").replace(/^\/+/, '');
+        data.terms[_t][13] = [];
         //data.terms[_t][12] = "/" +  _path
         var _route = {
           url: data.terms[_t][12], 
@@ -169,6 +192,7 @@ export class WpcoreService {
         _term_urls[_route.id] = _route.url;
       }
       data.terms._describe[12] = "url";
+      data.terms._describe[13] = "children";
     }
     //END : URL for terms
 
@@ -345,6 +369,10 @@ export class WpcoreService {
       }
     }
 
+    //Generate Semaphores for future use
+    this.generateSemaphore();
+
+    
     return data;
   }
 
@@ -384,6 +412,8 @@ export class WpcoreService {
     return this.getEntityByID('users', user_id);
   }
 
+
+
   //Get post data
   getPost(post_id: number){
     return this.getEntityByID('posts', post_id);
@@ -394,6 +424,47 @@ export class WpcoreService {
     return this.getEntityByID('terms', term_id);
   }  
 
+  getTermsByTaxonomy(taxonomy: string = "category"){
+    return _.filter(this.dbData.terms, function(item){ 
+      return item.taxonomy == taxonomy; 
+    });
+  }
+
+  getTaxonomyTree(taxonomy: string = "category") {
+    var terms = this.getTermsByTaxonomy();
+    return this.list_to_tree(terms);
+  }
+
+
+  list_to_tree(list) {
+    var map = {}, node, roots = [], i;
+    for (i = 0; i < list.length; i += 1) {
+      map[list[i].term_id] = i; // initialize the map
+      if(list[i]) {
+        list[i].children = []; // initialize the children  
+      }
+    }
+    for (i = 0; i < list.length; i += 1) {
+      node = list[i];
+      if (node.parent !== 0) {
+        // if you have dangling branches check that map[node.parentId] exists
+        list[map[node.parent]].children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+    if(roots) {
+      var _return = [];
+      for(let _i in roots) {
+        roots[_i].depth = roots[_i].parents.length;
+        if(roots[_i].parent == 0) {
+          _return.push(roots[_i]);
+        }
+      }
+      return _return;
+    }
+    return _return;
+  }
 
 }
  

@@ -20,7 +20,12 @@ export class TaxonomyFormComponent implements OnInit {
   @Input() taxonomy_name: string = 'Category';
   @Input() display_parent: boolean = false;
 
-  constructor () {}
+  tax_tree: any;
+
+  constructor (wpcore: WpcoreService) {
+    this.tax_tree = wpcore.getTaxonomyTree(this.taxonomy_machine_name); 
+    console.log("tax_tree", this.tax_tree);
+  }
 
   form = new FormGroup({});
   model = {  };
@@ -84,11 +89,13 @@ export class TaxonomyFormComponent implements OnInit {
 
   ];
   onSubmit() {
+
     console.log(this.model, this.taxonomy_machine_name);
   }
 
   ngOnInit(): void {
   }
+
 
 
 }
