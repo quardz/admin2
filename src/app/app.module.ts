@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 //Third party import
@@ -72,7 +72,6 @@ export function WpDBProvider(wpcore: WpcoreService) {
     ToastrModule.forRoot(), // ToastrModule added    
     AppRoutingModule,
     ReactiveFormsModule,
-    FormGroup,
     FormlyModule.forRoot(_formly_settings),
     FormlyBootstrapModule,
     HttpClientModule,

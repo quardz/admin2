@@ -21,6 +21,7 @@ export class TaxonomyFormComponent implements OnInit {
   @Input() display_parent: boolean = false;
 
   constructor () {}
+
   form = new FormGroup({});
   model = {  };
   fields: FormlyFieldConfig[] = [
@@ -83,7 +84,7 @@ export class TaxonomyFormComponent implements OnInit {
 
   ];
   onSubmit() {
-    console.log(this.model);
+    console.log(this.model, this.taxonomy_machine_name);
   }
 
   ngOnInit(): void {

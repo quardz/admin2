@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-devkit/schematics": "^9.1.11",
     "@angular/animations": "^9.1.12",
     "@angular/common": "~9.1.9",
     "@angular/compiler": "~9.1.9",
@@ -25,6 +26,7 @@
     "@ngx-formly/bootstrap": "^5.0.0",
     "@ngx-formly/core": "^5.0.0",
     "@ngx-formly/schematics": "^5.9.0",
+    "@schematics/angular": "^9.1.11",
     "@types/underscore": "^1.10.11",
     "bootstrap": "^4.5.0",
     "compass-mixins": "^0.12.10",

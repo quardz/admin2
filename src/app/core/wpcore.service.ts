@@ -28,6 +28,7 @@ export class WpcoreService {
   sitePublished: boolean = false;
   sitePublishedTime: number = 0;
   public sites: ISites[];
+  entityIdTracker: any;
 
 
 
@@ -37,6 +38,15 @@ export class WpcoreService {
     this.resolveDataURL();
 
   }
+
+  public getLatestEntityId(entity_type?){
+    if(entity_type && this.entityIdTracker[entity_type]) {
+      return this.entityIdTracker;
+    }
+    return this.entityIdTracker;
+  }
+
+  
 
   //@todo dynamic
   public loadSites(){
