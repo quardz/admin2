@@ -4,6 +4,7 @@ import { Observable, throwError, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 //import {}
 import * as _ from 'underscore'; 
+import { WphelperModule } from './modules/wphelper.module';
 
 interface ISites {
   name?: string,
@@ -14,7 +15,7 @@ interface ISites {
 }
 
 
-
+ 
 @Injectable({
   providedIn: 'root'
 })
@@ -32,10 +33,16 @@ export class WpcoreService {
   public sites: ISites[];
   semaphore: any = {};
   coreEntityTables = ['users', 'posts', 'terms'];
+  tablePKs = {
+    'users': 'ID',
+    'posts': 'ID',
+    'terms': 'term_id',
+  };
+
+  public entityDefines = {};
 
 
-
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private wphelper: WphelperModule) {
     this.loadSites();
     this.resolveDataURL();
 
@@ -46,7 +53,7 @@ export class WpcoreService {
       if(get_next) {
         return (parseInt(this.semaphore[entity_type]) + 1);
       }
-      return this.semaphore[entity_type];
+      return parseInt(this.semaphore[entity_type]);
     }
     return this.semaphore;
   }
@@ -149,11 +156,7 @@ export class WpcoreService {
     var _metatables = this.coreEntityTables;
     var _term_urls = {};
 
-    var tablePKs = {
-      'users': 'ID',
-      'posts': 'ID',
-      'terms': 'term_id',
-    }
+    var tablePKs = this.tablePKs;
 
     var _post_types_to_display = ['page', 'post'];
     var  _archives = [];
@@ -424,6 +427,31 @@ export class WpcoreService {
     return this.getEntityByID('terms', term_id);
   }  
 
+  saveEntity(data:any, entity_type: string) {
+    if(_.contains(this.coreEntityTables, entity_type) && data) {
+      this.dbData[entity_type]
+      var new_entity = this.wphelper.getEmptyEntityObj(this.dbData, entity_type);
+      var next_entity_id = this.getSemaphore('terms');
+      for(let _key in data) {
+        if(_.has(new_entity, _key)) {
+          new_entity[_key] = data[_key];
+        }
+      } 
+      var _primary_key = this.tablePKs[entity_type];
+      new_entity[_primary_key] = next_entity_id; 
+      var old_size = _.size(this.dbData[entity_type]);
+      this.dbData[entity_type].push(new_entity);
+      var new_size = _.size(this.dbData[entity_type]);
+      if(new_size == (old_size+1)) { 
+        this.setSemaphore(entity_type, next_entity_id);
+        this.mapIndex_Pk[entity_type][next_entity_id] = new_size;
+        return this.dbData[entity_type][old_size];
+      }
+    }
+    return false;
+    //@todo
+  }
+
   getTermsByTaxonomy(taxonomy: string = "category"){
     return _.filter(this.dbData.terms, function(item){ 
       return item.taxonomy == taxonomy; 
@@ -432,39 +460,9 @@ export class WpcoreService {
 
   getTaxonomyTree(taxonomy: string = "category") {
     var terms = this.getTermsByTaxonomy();
-    return this.list_to_tree(terms);
-  }
+    return this.wphelper.list_to_tree(terms);
+  } 
 
-
-  list_to_tree(list) {
-    var map = {}, node, roots = [], i;
-    for (i = 0; i < list.length; i += 1) {
-      map[list[i].term_id] = i; // initialize the map
-      if(list[i]) {
-        list[i].children = []; // initialize the children  
-      }
-    }
-    for (i = 0; i < list.length; i += 1) {
-      node = list[i];
-      if (node.parent !== 0) {
-        // if you have dangling branches check that map[node.parentId] exists
-        list[map[node.parent]].children.push(node);
-      } else {
-        roots.push(node);
-      }
-    }
-    if(roots) {
-      var _return = [];
-      for(let _i in roots) {
-        roots[_i].depth = roots[_i].parents.length;
-        if(roots[_i].parent == 0) {
-          _return.push(roots[_i]);
-        }
-      }
-      return _return;
-    }
-    return _return;
-  }
 
 }
  

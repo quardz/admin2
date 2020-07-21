@@ -13,6 +13,7 @@ import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 
 //Custom
+import { WphelperModule } from './core/modules/wphelper.module';
 import { WpcoreService } from './core/wpcore.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -48,6 +49,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
 @NgModule({
   declarations: [
     AppComponent,
+
     SidebarComponent,
     NavbarComponent,
     FooterComponent,
@@ -75,6 +77,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     FormlyModule.forRoot(_formly_settings),
     FormlyBootstrapModule,
     HttpClientModule,
+    WphelperModule,
   ],
   providers: [
     WpcoreService,
