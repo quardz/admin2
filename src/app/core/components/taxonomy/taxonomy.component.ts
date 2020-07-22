@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import Tabulator from 'tabulator-tables';
-import { FormGroup, ReactiveFormsModule,FormControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule,FormControl, ValidationErrors,FormBuilder } from '@angular/forms';
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
 
 import * as _ from 'underscore';
@@ -22,6 +22,18 @@ export class TaxonomyFormComponent implements OnInit {
   @Input() taxonomy_name: string = 'Category';
   @Input() display_parent: boolean = false;
 
+
+  title = 'DemoTabulator';
+  terms: any[];
+  columnNames: any[] = [];
+  termTable: Tabulator;
+  find: string;
+  bulkOps = {
+    'select': 'Bulk Actions',
+    'delete': 'Delete',
+  };
+
+
   tax_tree: any;
   form = new FormGroup({});
   model = { 
@@ -31,17 +43,38 @@ export class TaxonomyFormComponent implements OnInit {
     description: "",
     taxonomy: "",
   };
+
+
+
   fields: FormlyFieldConfig[] = [];
 
-  constructor (private wpcore: WpcoreService, private wphelper: WphelperModule, private toastr: ToastrService) {
+  constructor (private wpcore: WpcoreService, 
+    private wphelper: WphelperModule, 
+    private toastr: ToastrService,
+    public fb: FormBuilder
+    ) {
     this.tax_tree = wpcore.getTaxonomyTree(this.taxonomy_machine_name); 
     if(this.taxonomy_machine_name == "category") {
       this.display_parent = true;
     }
     var selector = this.wphelper.treeSort(this.tax_tree);
     this.defineFields(selector);
-    
+    this.getData();
   }
+
+  bulkActionsForm = this.fb.group({
+    bulkaction: ['']
+  });
+
+  termSearchForm = this.fb.group({
+    searchterm: ['']
+  });  
+
+  getData() {
+    var data = this.wpcore.getData(); 
+    this.terms = data.terms;    
+  }
+
 
   defineFields(_parents?:any) {
   
@@ -117,53 +150,33 @@ export class TaxonomyFormComponent implements OnInit {
           description: this.wphelper.stripTags(this.model.description),
         };
 
-        var msg = this.wpcore.saveEntity(term, 'terms');
-
-        //var msg = "Slug : " + slug + " :: name : " + name;
-        this.toastr.success('Success!', msg);
-        console.log("new term", msg);
-        console.log("all terms", this.wpcore.dbData.terms);  
+        if(this.wphelper.isDuplicateTerm(term, this.wpcore.dbData.terms)) {
+          this.toastr.error('Error!', "A term with the name provided already exists with this parent.");
+        }
+        else {
+          var msg = this.wpcore.saveEntity(term, 'terms');
+          this.refreshTable();
+          this.toastr.success('Success!', "Created new Item");
+          this.model = {
+            name: " ",
+            slug: "",
+            parent:0,
+            description: "",
+            taxonomy: "",            
+          };
+        }
       }
     }
   }
 
-  ngOnInit(): void {
-  }
+  
 
-
-
-}
-
-@Component({
-  selector: 'taxonomy-table',
-  templateUrl: './taxonomy-table.component.html',
-  styleUrls: ['./taxonomy-table.component.scss']
-})
-export class TaxonomyTableComponent implements OnInit {
-  title = 'DemoTabulator';
-  terms: any[];
-  columnNames: any[] = [];
-  termTable: Tabulator;
-  find: string;
-
-
-
-
-  @Input() taxonomy_machine_name: string = "category";
-
-  constructor(public wpcore: WpcoreService) { 
-    var data = this.wpcore.getData();
-    this.terms = data.terms;
-    
-  }
-
-  ngOnInit(): void {
-
+  buildTable(): void {
     this.columnNames = [
 
       { title: "Select", width: 75, formatter:"rowSelection", titleFormatter:"rowSelection", align:"center", headerSort:false},
       { title: "Id", field: "term_id",visible:false },
-      { title: "Name", field: "name" },
+      { title: "Name", field: "name",headerFilter:true },
       { title: "Description", field: "description"},//,editor:"textarea" },
       { title: "Slug", field: "slug",editor:"input" },
       { title: "Count", field: "count",formatter:"link", formatterParams:{
@@ -201,8 +214,27 @@ export class TaxonomyTableComponent implements OnInit {
     this.termTable.setColumns(this.columnNames);
     this.termTable.setData(this.terms);
     this.termTable.setFilter(this.customFilter, {taxonomy: this.taxonomy_machine_name});
+  }  
 
+  ngOnInit() {
+    this.buildTable();
   }
+
+
+
+  onSubmitbulkActionsForm() {
+    console.log("this is onsubmit", this.bulkActionsForm.get('bulkaction').value); 
+  }
+
+  onSubmitTermSearchForm() {
+    console.log("this is onsubmit", this.bulkActionsForm.get('searchterm').value); 
+  }
+
+  refreshTable() {    
+    this.getData();
+    this.termTable.replaceData(this.terms);
+  }
+
   customFilter(data, filterParams){
       return data.taxonomy == filterParams.taxonomy; //must return a boolean, true if it passes the filter.
   }
@@ -215,9 +247,34 @@ export class TaxonomyTableComponent implements OnInit {
     if(event) {
       //this.myTable.setFilter("name", "LIKE", event);  
     }
-
   }
 
+}
+
+@Component({
+  selector: 'taxonomy-table',
+  templateUrl: './taxonomy-table.component.html',
+  styleUrls: ['./taxonomy-table.component.scss']
+})
+export class TaxonomyTableComponent implements OnInit {
+  title = 'DemoTabulator';
+  terms: any[];
+  columnNames: any[] = [];
+  termTable: Tabulator;
+  find: string;
+
+
+
+
+  @Input() taxonomy_machine_name: string = "category";
+
+  constructor(public wpcore: WpcoreService) { 
+    
+  }
+
+ngOnInit(): void {
+  
+  }
 }
 
 

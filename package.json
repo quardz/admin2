@@ -30,6 +30,7 @@
     "@types/underscore": "^1.10.12",
     "bootstrap": "^4.5.0",
     "compass-mixins": "^0.12.10",
+    "lodash": "^4.17.19",
     "ngx-cookie-service": "^3.0.4",
     "ngx-toastr": "^13.0.0",
     "rxjs": "~6.5.4",

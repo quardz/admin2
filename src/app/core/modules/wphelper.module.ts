@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as _ from 'underscore';
+import * as cloneDeep from 'lodash/cloneDeep';
 
 
 
@@ -20,15 +21,18 @@ export class WphelperModule {
 
   //Set given object empty
   public setObjEmpty(input){
-    let keys = Object.keys(input);
-    for(let key of keys) {
-      if(typeof input[key] != "object" ){
-        input[key] = null;
-      }else{
-        this.setObjEmpty(input[key]);
+    if(typeof input === 'object' && input !== null) {
+      let keys = Object.keys(input);
+      for(let key of keys) {
+        if(typeof input[key] != "object" ){
+          input[key] = null;
+        }else{
+          this.setObjEmpty(input[key]);
+        }
       }
+      return input; 
     }
-    return input; 
+    return false;
   }
 
   //Get the empty entity object
@@ -36,7 +40,7 @@ export class WphelperModule {
     if(obj && _.has(obj, entity_type) && obj[entity_type]) {
       var first = _.first(obj[entity_type]);
       if(first && typeof first === 'object' && first !== null) {
-        return this.setObjEmpty(first);
+        return cloneDeep(first);
       }
     }
     return false;
@@ -97,6 +101,22 @@ export class WphelperModule {
       return options;
     }
     return false;
+  }
+
+  //Check if current term is duplicate
+  public isDuplicateTerm(term: any, terms: any){
+    var find = {
+      name: term.name,
+      slug: term.slug,
+      parent: term.parent,
+      taxonomy: term.taxonomy,
+    };
+    var com = _.findLastIndex(terms, find);
+    if(com == -1) {
+      return false;
+    }
+    return true;
+    //name, slug, category, parent
   }
 
   //Create slug from string

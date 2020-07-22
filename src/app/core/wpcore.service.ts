@@ -4,6 +4,8 @@ import { Observable, throwError, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 //import {}
 import * as _ from 'underscore'; 
+import * as cloneDeep from 'lodash/cloneDeep';
+
 import { WphelperModule } from './modules/wphelper.module';
 
 interface ISites {
@@ -428,8 +430,9 @@ export class WpcoreService {
   }  
 
   saveEntity(data:any, entity_type: string) {
+
     if(_.contains(this.coreEntityTables, entity_type) && data) {
-      this.dbData[entity_type]
+      
       var new_entity = this.wphelper.getEmptyEntityObj(this.dbData, entity_type);
       var next_entity_id = this.getSemaphore('terms');
       for(let _key in data) {
@@ -437,7 +440,8 @@ export class WpcoreService {
           new_entity[_key] = data[_key];
         }
       } 
-      var _primary_key = this.tablePKs[entity_type];
+      var _primary_key = this.tablePKs[entity_type]; 
+      
       new_entity[_primary_key] = next_entity_id; 
       var old_size = _.size(this.dbData[entity_type]);
       this.dbData[entity_type].push(new_entity);
