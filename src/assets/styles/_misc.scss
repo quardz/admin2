@@ -131,3 +131,32 @@ pre {
   .form-control-sm {
     height: calc(1.5em + 0.5rem + 6px) !important;
   }
+
+:host ::ng-deep {
+  .accordion {
+    .card-header {
+      padding: 0.5rem 1rem !important;
+      .btn {
+        padding: 0px;
+        font-weight: bold;
+      }
+    }
+    .card-body {
+      padding: 0px !important;
+      .card-body-pad {
+        padding: 1.25rem;
+      }
+      .card-bodyfooter {
+        padding: 0.5rem 1.25rem;
+        display: block;
+        float: left;
+        width: 100%;
+        background: #fafafa;         
+      }
+    }
+  } 
+}  
+
+.postform-extras .accordion > .card:not(:last-of-type) {
+  margin-bottom: 15px; 
+}

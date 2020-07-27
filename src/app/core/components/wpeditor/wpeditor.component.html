@@ -1,10 +1,174 @@
+<h1 class = "page-title">Add New Page</h1>
+<form  #postform = "ngForm" (ngSubmit) = "onClickSubmit(postform.value)" >
+<div class = "row">
+  <div class = "col-sm-9">
+    <div class="form-group">
+      <input type="text" class="form-control form-control-lg" id="post_title" placeholder="Title" name="post_title"  required ngModel>
+      <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="post_name">Permalink: https://www.quardz.com/</span>
+        </div>
+        <input type="text" name = "post_url" class="form-control" id="post_name" placeholder="" required ngModel>
+      </div>
+    </div>
+    <div class = "form-group">
+      <editor name="post_content" ngModel [init] = 'tinymce_init' apiKey = "qizf8kput6rtu5sn3hmtw5w3yzq1hakzp8x41difj14ra10l"></editor>
+    </div>
+    <div class = "post-bottom-settings">
+      <ngb-accordion [closeOthers]="true"  class="accordion accordion-danger">
+        
+        <ngb-panel id="tab-excerpt">
+          <ng-template ngbPanelTitle>
+            Excerpt
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div class = "card-body-pad">
+              <div class="form-group">
+                <textarea class="form-control" id="post_excerpt" name = "post_excerpt" ngModel rows="3"></textarea>
+                <small class="form-text text-muted">
+                  Excerpts are optional hand-crafted summaries of your content that can be used in your theme. Learn more about manual excerpts.
+                </small>
+              </div>
+            </div>
+          </ng-template>
+        </ngb-panel>
+
+        <ngb-panel id="tab-slug">
+          <ng-template ngbPanelTitle>
+            Slug
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div class = "card-body-pad">
+              <div class="form-group">
+                <input type="text" id="post_name" class="form-control" name = "post_name" ngModel required>
+              </div>
+            </div>
+          </ng-template>
+        </ngb-panel>
+
+        <ngb-panel id="tab-author">
+          <ng-template ngbPanelTitle>
+            Author
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div class = "card-body-pad">
+              <div class="form-group">
+                <select class="form-control" id="post_author" name = "post_author" required ngModel>
+
+                </select>
+              </div>
+            </div>
+          </ng-template>
+        </ngb-panel>
 
 
 
-<block-editor-provider id = "editor" #editor  [(blocks)]="blocks" ></block-editor-provider>
+      </ngb-accordion>
+    </div>
+  </div>
+  <div class = "col-sm-3 postform-extras">
+    <div class="btn-group justify-content-between w-100" role="group">
+      <button class = "btn btn-secondary">Preview</button>
+      <button class = "btn btn-primary">Publish</button>
+    </div>
+    <div>
+      <p></p>
+    </div>
 
-<button (click)="logBlocks()">click me</button>
-<editor-history-undo></editor-history-undo>
-<editor-history-redo></editor-history-redo>
+    <ngb-accordion [closeOthers]="true" activeIds="tab-publish" class="accordion accordion-danger">
+      <ngb-panel id="tab-publish">
+        <ng-template ngbPanelTitle>
+          Publish
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div class = "card-body-pad">
+            <div class="form-group">
+              <label for="post_status_visibility"><i class = "menu-icon mdi mdi-select-compare"></i> Status</label>
+              <select class="form-control" id="post_status" name = "post_status" required ngModel>
+                <option value = "publish">Published</option>
+                <option value = "pending">Pending Review</option>
+                <option value = "draft">Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="post_status_visibility"><i class = "menu-icon mdi mdi-eye"></i> Visibility</label>
+              <select class="form-control" id="post_status_visibility" name = "post_status_visibility" required ngModel>
+                <option value = "publish">Public</option>
+                <option value = "private">Private</option>
+                <option value = "password">Password Protected</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="post_date"><i class = "menu-icon mdi mdi-file-document"></i> Published</label>
+              <div class="input-group">
+                <input class="form-control" placeholder="yyyy-mm-dd"
+                name="post_date" [(ngModel)]="model" ngbDatepicker #post_date="ngbDatepicker">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calendar" (click)="post_date.toggle()" type="button"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bodyfooter">
+            <ul class = "list-inline">
+              <li class = "list-inline-item"><a >Move to Trash</a></li>
+              <li class = "float-left list-inline-item"><a class = "btn btn-sm btn-primary">Update</a></li>
+            </ul>
+          </div>
+        </ng-template>
+      </ngb-panel>
 
- 
+      <ngb-panel id="tab-pageattributes">
+        <ng-template ngbPanelTitle>
+            Page Attributes
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div class = "card-body-pad">
+            <div class="form-group">
+              <label for="post_parent"><i class = "menu-icon mdi mdi-select-compare"></i> Parent</label>
+              <select class="form-control" id="post_parent" name = "post_parent" required ngModel>
+                <option value = "publish">Published</option>
+                <option value = "pending">Pending Review</option>
+                <option value = "draft">Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="post_status_visibility"><i class = "menu-icon mdi mdi-select-compare"></i> Status</label>
+              <select class="form-control" id="post_status" name = "post_status" required ngModel>
+                <option value = "publish">Published</option>
+                <option value = "pending">Pending Review</option>
+                <option value = "draft">Draft</option>
+              </select>
+            </div>            
+          </div>
+          <div class="card-bodyfooter">
+            Need help? Use the Help tab above the screen title.
+
+          </div>          
+        </ng-template>
+      </ngb-panel>
+      
+      <ngb-panel id="tab-categories">
+        <ng-template ngbPanelTitle>
+            Categories
+        </ng-template>
+        <ng-template ngbPanelContent>
+
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel id="tab-tags">
+        <ng-template ngbPanelTitle>
+            Tags
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div class = "card-body-pad">
+            <tag-input [(ngModel)]='model' theme='bootstrap' id="items" name = "items"  ngModel></tag-input>
+          </div>
+        </ng-template>
+      </ngb-panel>      
+
+    </ngb-accordion>
+  </div>
+</div>
+</form>

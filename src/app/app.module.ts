@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule,FormsModule } from '@angular/forms';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 
@@ -12,11 +12,11 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 
 
 //Custom
-import { NgGutenbergModule } from 'projects/ng-gutenberg/ng-gutenberg';
 import { WphelperModule } from './core/modules/wphelper.module';
 import { WpcoreService } from './core/wpcore.service';
 import { AppRoutingModule } from './app-routing.module';
@@ -32,6 +32,7 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
 
    } from './core/components/settings/settings.component';
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -78,15 +79,16 @@ export function WpDBProvider(wpcore: WpcoreService) {
     BrowserModule,
     CommonModule,
     BrowserAnimationsModule, // required animations module
-    ToastrModule.forRoot(), // ToastrModule added    
+    ToastrModule.forRoot(), // ToastrModule added 
+    EditorModule,
     AppRoutingModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule,FormsModule,
     NgxDatatableModule,
     FormlyModule.forRoot(_formly_settings),
     FormlyBootstrapModule,
     HttpClientModule,
-    NgGutenbergModule,
     WphelperModule,
+    NgbModule,
   ],
   providers: [
     WpcoreService,

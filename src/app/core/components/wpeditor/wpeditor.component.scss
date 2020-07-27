@@ -1,0 +1,17 @@
+:host ::ng-deep {
+  .accordion {
+    .card-header {
+      padding: 0.5rem 1rem !important;
+      .btn {
+        padding: 0px;
+        font-weight: bold;
+      }
+    }
+    .card-body {
+      padding: 0px !important;
+      .card-body-pad {
+        padding: 1.25rem;
+      }
+    }
+  } 
+}
