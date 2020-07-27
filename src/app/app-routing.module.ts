@@ -6,7 +6,8 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
   SettingsPrivacyComponent, SettingsWritingComponent
 } from './core/components/settings/settings.component';
 
-import { TaxonomyComponent, TaxonomyTableComponent } from './core/components/taxonomy/taxonomy.component';
+import { TaxonomyComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent } from './core/components/taxonomy/taxonomy.component';
+import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 
 
 const routes: Routes = [
@@ -22,12 +23,13 @@ const routes: Routes = [
   { path: 'admin/settings/writing', component: SettingsWritingComponent },    
 
 
-  { path: 'admin/posts/categories', component: TaxonomyComponent },    
+  { path: 'admin/posts/category', component: TaxonomyCategoryComponent},
+  { path: 'admin/posts/post_tag', component: TaxonomyPosttagComponent},
   
-  
+  { path: 'admin/posts/new', component: WpeditorComponent},
   
 
-];
+];   
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

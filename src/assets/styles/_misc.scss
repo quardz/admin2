@@ -128,3 +128,6 @@ pre {
 .tabulator-row.tabulator-row-even {
    background-color: #ffffff;
 }
+  .form-control-sm {
+    height: calc(1.5em + 0.5rem + 6px) !important;
+  }

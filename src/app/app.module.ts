@@ -1,10 +1,11 @@
 //Core import
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 
 //Third party import
@@ -12,7 +13,10 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 
+
+
 //Custom
+import { NgGutenbergModule } from 'projects/ng-gutenberg/ng-gutenberg';
 import { WphelperModule } from './core/modules/wphelper.module';
 import { WpcoreService } from './core/wpcore.service';
 import { AppRoutingModule } from './app-routing.module';
@@ -21,12 +25,13 @@ import { FormlyHorizontalWrapper } from './core/components/settings/horizontal-w
 import { SidebarComponent } from './core/components/sidebar/sidebar.component';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { FooterComponent } from './core/components/footer/footer.component';
-import { TaxonomyComponent, TaxonomyFormComponent, TaxonomyTableComponent } from './core/components/taxonomy/taxonomy.component';
+import { TaxonomyComponent, TaxonomyFormComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent } from './core/components/taxonomy/taxonomy.component';
 import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
   SettingsMediaComponent, SettingsPermalinkComponent, SettingsReadingComponent,
   SettingsPrivacyComponent, SettingsWritingComponent
 
    } from './core/components/settings/settings.component';
+import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 
 
 
@@ -62,10 +67,12 @@ export function WpDBProvider(wpcore: WpcoreService) {
     SettingsReadingComponent,
     SettingsPrivacyComponent, 
     SettingsWritingComponent,
-    TaxonomyTableComponent,
     TaxonomyFormComponent,
     TaxonomyComponent,
-    FormlyHorizontalWrapper,    
+    TaxonomyPosttagComponent,
+    TaxonomyCategoryComponent,
+    FormlyHorizontalWrapper,
+    WpeditorComponent,    
   ],
   imports: [
     BrowserModule,
@@ -74,15 +81,19 @@ export function WpDBProvider(wpcore: WpcoreService) {
     ToastrModule.forRoot(), // ToastrModule added    
     AppRoutingModule,
     ReactiveFormsModule,
+    NgxDatatableModule,
     FormlyModule.forRoot(_formly_settings),
     FormlyBootstrapModule,
     HttpClientModule,
+    NgGutenbergModule,
     WphelperModule,
   ],
   providers: [
     WpcoreService,
     { provide: APP_INITIALIZER, useFactory: WpDBProvider, deps: [WpcoreService], multi: true }        
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  //schemas: [ NO_ERRORS_SCHEMA ]
+
 })
 export class AppModule { }

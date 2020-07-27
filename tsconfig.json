@@ -19,8 +19,28 @@
       "wphelper": [
         "dist/wphelper/wphelper",
         "dist/wphelper"
-      ]
-    }
+      ],
+      "ng-gutenberg": [
+        "dist/ng-gutenberg/ng-gutenberg",
+        "dist/ng-gutenberg"
+      ],
+      "@angular/*": [
+        "./node_modules/@angular/*",
+      ],
+      "@wordpress/*": [
+        "./node_modules/@wordpress/*",
+      ],
+      "@angular-react/*": [
+        "./node_modules/@angular-react/*",
+      ],
+      "@types/react-dom": [
+        "./node_modules/@types/react-dom",
+      ],
+      "@types/react": [
+        "./node_modules/@types/react",
+      ],      
+    },
+
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

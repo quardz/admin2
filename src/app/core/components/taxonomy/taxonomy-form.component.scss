@@ -1,7 +1,5 @@
 :host ::ng-deep {
-  .tabulator-headers {
-    .tabulator-col {
-      height: 75px !important;
-    }
-  } 
+  .form-control-sm {
+    height: calc(1.5em + 0.5rem + 6px) !important;
+  }
 }

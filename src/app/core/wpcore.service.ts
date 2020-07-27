@@ -398,7 +398,7 @@ export class WpcoreService {
         return entity.metatbl[meta_key][1];  
       }
       else {
-        entity.metatbl[meta_key]
+        entity.metatbl[meta_key];
       }
     } 
     return false;
@@ -443,6 +443,7 @@ export class WpcoreService {
       var _primary_key = this.tablePKs[entity_type]; 
       
       new_entity[_primary_key] = next_entity_id; 
+
       var old_size = _.size(this.dbData[entity_type]);
       this.dbData[entity_type].push(new_entity);
       var new_size = _.size(this.dbData[entity_type]);
@@ -467,6 +468,20 @@ export class WpcoreService {
     return this.wphelper.list_to_tree(terms);
   } 
 
+  //Delete entities
+  //@todo check deendencies, integrities etc
+  deleteEntity(entity_id: any, entity_type: string, permenent = false) {
+    if(_.has(this.mapIndex_Pk, entity_type) 
+      && _.has(this.mapIndex_Pk[entity_type], entity_id) 
+      && _.has(this.dbData, entity_type)) {
+        var _entity_index = this.mapIndex_Pk[entity_type][entity_id];
+        //@todo, check entity id and entity are same 
+        delete this.mapIndex_Pk[entity_type][entity_id];
+        delete this.dbData[entity_type][_entity_index];
+        return true;
+    }
+    return false;
+  }
 
 }
  

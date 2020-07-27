@@ -65,3 +65,13 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+
+(<any>window).process = {
+    env: {
+        NODE_ENV:'production'
+    }
+};
+(<any>window).global = window;
+
+
