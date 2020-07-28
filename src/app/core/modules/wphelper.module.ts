@@ -188,6 +188,11 @@ export class WphelperModule {
     return str;
   }
 
+  //Convert single file to blob
+  public fileToBlob(file) {
+
+  }
+
   //@todo everything
   public checkDuplicateTerm(terms:any, name:string, slug: number, tazonomy: string, parent) {
     //check for 

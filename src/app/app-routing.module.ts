@@ -8,6 +8,8 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
 
 import { TaxonomyComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent } from './core/components/taxonomy/taxonomy.component';
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
+import { MediaComponent } from './core/components/media/media.component';
+
 
 
 const routes: Routes = [
@@ -27,6 +29,8 @@ const routes: Routes = [
   { path: 'admin/posts/post_tag', component: TaxonomyPosttagComponent},
   
   { path: 'admin/posts/new', component: WpeditorComponent},
+
+  { path: 'admin/media/library', component: MediaComponent},
   
 
 ];   

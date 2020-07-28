@@ -33,7 +33,8 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
    } from './core/components/settings/settings.component';
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { ngfModule, ngf } from "angular-file";
+import { MediaComponent } from './core/components/media/media.component';
 
 
 var _formly_settings = {
@@ -73,7 +74,8 @@ export function WpDBProvider(wpcore: WpcoreService) {
     TaxonomyPosttagComponent,
     TaxonomyCategoryComponent,
     FormlyHorizontalWrapper,
-    WpeditorComponent,    
+    WpeditorComponent,
+    MediaComponent,    
   ],
   imports: [
     BrowserModule,
@@ -89,6 +91,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     HttpClientModule,
     WphelperModule,
     NgbModule,
+    ngfModule,
   ],
   providers: [
     WpcoreService,

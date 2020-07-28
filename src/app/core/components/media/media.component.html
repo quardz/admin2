@@ -1,0 +1,27 @@
+<h1 class = "page-title page_title">Media Library</h1>
+
+<div class = "row">
+  <div class = "col-sm-12 col-add-meda">
+    <a class = "btn btn-sm btn-outline-primary" ngfSelect multiple="1" [(files)]="files" (fileChange) = "saveFiles('from add new file')">Add New files</a>    
+  </div>
+
+ 
+</div>
+
+
+
+
+
+<ngfFormData
+  [files]      = "files"
+  [(FormData)] = "myFormData"
+  postName     = "file"
+></ngfFormData>
+
+<ngfUploadStatus
+  [(percent)] = "uploadPercent"
+></ngfUploadStatus>
+
+<div *ngIf="uploadPercent">
+  Upload Progress: {{ uploadPercent }}%
+</div>

@@ -5,7 +5,6 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import * as _ from 'underscore';
 import { ToastrService } from 'ngx-toastr';
-import { TagInputModule } from 'ngx-chips'; 
 
 
 import { WpcoreService } from '../../wpcore.service';
@@ -20,7 +19,7 @@ import { WphelperModule } from '../../modules/wphelper.module';
   templateUrl: './wpeditor.component.html',
   styleUrls: ['./wpeditor.component.scss'],
   encapsulation: ViewEncapsulation.None,
-   
+    
 })
 export class WpeditorComponent implements OnInit {
   
@@ -32,12 +31,31 @@ export class WpeditorComponent implements OnInit {
   //Declarations
   form = new FormGroup({});
   model = { 
-    items: [],
+    ID: 0,
+    post_title: '',
+    post_content: '',
+    post_url: '',
+    post_author: 1,
+    post_date: '',
+    post_excerpt: '',
+    post_name: '',
+    post_parent: 0,
+    post_status: 0,
+    post_type: '',
+    post_tags: [],
+    _post_categories: [],
+    _post_tags: [],
+    
+
   };
+
   fields: FormlyFieldConfig[] = [];
   tinymce_init: any; 
+  items = ['Pizza', 'Pasta', 'Parmesan'];
 
   
+  categories: any;
+  post_tags: any;
 
 
   constructor(
@@ -45,8 +63,22 @@ export class WpeditorComponent implements OnInit {
     private wphelper: WphelperModule, 
     private toastr: ToastrService) {
 
+    this.prepareFormData();
     this.tinymce_init = wphelper.TinyMceInit();
-    this.model.items = ['Pizza', 'Pasta', 'Parmesan'];
+  }
+
+  prepareFormData() {
+    var _tax_tree = this.wpcore.getTaxonomyTree('category');
+    var _categories = this.wphelper.treeSort(_tax_tree);
+    this.categories = _categories;
+
+
+
+    var _tax_tree = this.wpcore.getTaxonomyTree('post_tag');
+    var _post_tags = this.wphelper.treeSort(_tax_tree);
+    this.post_tags = _post_tags;
+
+    console.log("cats", _categories, _post_tags);
   }
 
   ngOnInit(): void {

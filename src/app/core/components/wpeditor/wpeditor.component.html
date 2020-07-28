@@ -72,6 +72,7 @@
       <button class = "btn btn-primary">Publish</button>
     </div>
     <div>
+
       <p></p>
     </div>
 
@@ -153,17 +154,31 @@
             Categories
         </ng-template>
         <ng-template ngbPanelContent>
+          <div class = "card-body-pad">
+            
+            <div class="form-group">
+              <select class="form-control form-control-lg" id="_post_categories" multiple name = "_post_categories"  [(ngModel)]="model._post_categories" >
+                <option *ngFor="let _cat of categories" [ngValue] = "_cat.value">{{_cat.label}}</option>
+              </select>
+            </div>
 
+          </div>
         </ng-template>
       </ngb-panel>
 
       <ngb-panel id="tab-tags">
         <ng-template ngbPanelTitle>
-            Tags
+            Tags 
         </ng-template>
         <ng-template ngbPanelContent>
           <div class = "card-body-pad">
-            <tag-input [(ngModel)]='model' theme='bootstrap' id="items" name = "items"  ngModel></tag-input>
+
+            <div class="form-group">
+              <select class="form-control form-control-lg" id="_post_tags" multiple name = "_post_tags"  [(ngModel)]="model.post_tags" >
+                <option *ngFor="let _tag of post_tags" [ngValue] = "_tag.value">{{_tag.label}}</option>
+              </select>
+            </div>
+
           </div>
         </ng-template>
       </ngb-panel>      
