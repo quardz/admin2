@@ -1,0 +1,40 @@
+<div class="wpmenuitem {{listitem.entity_type}} isroot-{{isRoot}}">
+
+  
+  <div class="card"  *ngIf = "!isRoot">
+    <h5 class="card-header cur-ch">{{listitem.title}} 
+      <span (click)="listitem.isCollapsed = !listitem.isCollapsed"
+      [attr.aria-expanded]="!listitem.isCollapsed" 
+      class = "float-right ml-2"
+      attr.aria-controls="menuitem-{{listitem.id}}">[Expand]</span>
+      <small class = "float-right menu-type">{{listitem.entity_label}}</small>
+    </h5>
+    <div class="card-body" id="menuitem-{{listitem.id}}" [ngbCollapse]="listitem.isCollapsed">
+      <div>
+        <h6>{{listitem.name}}</h6>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="menu-item-url-{{listitem.id}}">URL</label>
+          <input type="text"  name = "link" [(ngModel)] = 'listitem.link' required #textbox class="form-control" id="menu-item-url-{{listitem.id}}">
+        </div>
+        <div class="form-group">
+          <label for="menu-item-label-{{listitem.id}}">Navigation Label</label>
+          <input type="text"  name = "title" [(ngModel)] = 'listitem.title' class="form-control" id="menu-item-label-{{listitem.id}}" required #textbox >
+        </div>
+      </div>
+      <ul class = "list-inline">
+        <li class = "list-inline-item text-danger" (click) = "listitem.removed = true"><a>Remove</a></li>
+        <li class = "list-inline-item"> | </li>
+        <li class = "list-inline-item" (click) = "listitem.isCollapsed = true"><a>Cancel</a></li>
+      </ul>
+    </div>
+  </div>
+  
+
+  <div class="item-child"  *ngIf="listitem.children" [sortablejs]="listitem.children"  [sortablejsOptions]="options">
+  <div *ngFor="let listChild of listitem.children">
+    <menu-item [listitem]="listChild"></menu-item>
+  </div>
+</div>
+</div>

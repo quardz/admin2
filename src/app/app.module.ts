@@ -13,6 +13,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyBootstrapModule } from '@ngx-formly/bootstrap';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { SortablejsModule } from 'ngx-sortablejs';
 
 
 
@@ -35,6 +37,8 @@ import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ngfModule, ngf } from "angular-file";
 import { MediaComponent } from './core/components/media/media.component';
+import { MenusComponent } from './core/components/menus/menus.component';
+import { MenuItemComponent } from './core/components/menus/menu-item.component';
 
 
 var _formly_settings = {
@@ -75,7 +79,9 @@ export function WpDBProvider(wpcore: WpcoreService) {
     TaxonomyCategoryComponent,
     FormlyHorizontalWrapper,
     WpeditorComponent,
-    MediaComponent,    
+    MediaComponent,
+    MenusComponent,   
+    MenuItemComponent, 
   ],
   imports: [
     BrowserModule,
@@ -92,6 +98,8 @@ export function WpDBProvider(wpcore: WpcoreService) {
     WphelperModule,
     NgbModule,
     ngfModule,
+    TreeModule,
+    SortablejsModule.forRoot({ animation: 150}),
   ],
   providers: [
     WpcoreService,

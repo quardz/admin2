@@ -4,8 +4,15 @@ body,
 html {
   overflow-x: hidden;
   padding-right: 0 !important; // resets padding right added by Bootstrap modal
+  color: #23282d;
 }
 
+h1,h2,h3,h4,h5 {
+  color: #23282d;
+}
+h2 {
+  font-size: 20px;
+}
 *:-moz-full-screen,
 *:-webkit-full-screen,
 *:fullscreen *:-ms-fullscreen {
@@ -132,8 +139,24 @@ pre {
     height: calc(1.5em + 0.5rem + 6px) !important;
   }
 
+.accordion {
+  .card {
+    .card-header {
+      padding: 0px !important;
+      .btn {
+        padding-left: 15px;
+        padding-right: 15px;
+        color: #2e3237;      
+        width: 100%;
+        text-align: left        
+      }      
+    }
+
+  }
+} 
+
 :host ::ng-deep {
-  .accordion {
+  .card-pad {
     .card-header {
       padding: 0.5rem 1rem !important;
       .btn {
@@ -160,3 +183,50 @@ pre {
 .postform-extras .accordion > .card:not(:last-of-type) {
   margin-bottom: 15px; 
 }
+
+.title-sub {
+  font-size: 20px;
+}
+
+.col-menu-select {
+  margin-bottom: 15px;
+    margin-top: 15px;
+  .form-inline {
+    padding: 5px 15px;
+    background: #fff;
+    font-size: 12px;
+  }
+}
+
+.cur-ch {
+  cursor: move;
+}
+.cur-zi {
+  cursor: zoom-in; 
+}
+.cur-zo {
+  cursor: zoom-out;  
+}
+.isroot-false {
+  padding-left: 10px;
+}
+.wpmenuitem {
+  .card-header {
+    font-size: 0.8rem;
+    .menu-type {
+      font-size: 11px;
+    }
+  }
+  .isroot-true {
+    //margin-left: -15px;
+  }
+  ul li a{
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
+.href {
+  color: #308ee0;
+}
+

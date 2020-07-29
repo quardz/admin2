@@ -14,6 +14,15 @@ import * as cloneDeep from 'lodash/cloneDeep';
 export class WphelperModule { 
 
 
+  public isValidUrl(string) {
+    try {
+      new URL(string);
+    } catch (_) {
+      return false;  
+    }
+    return true;
+	}
+
   public TinyMceInit() {
 
     return {
@@ -96,8 +105,40 @@ export class WphelperModule {
     return false;
   }
 
+  // list to tree
+  public list2tree(list, field_id = 'term_id', field_children = 'children', field_parent = 'parent') {
+    var map = {}, node, roots = [], i;
+    for (i = 0; i < list.length; i += 1) {
+      map[list[i][field_id]] = i; // initialize the map
+      if(list[i]) {
+        list[i][field_children] = []; // initialize the children  
+      }
+    }
 
-  //Convert a list of array into tree
+    for (i = 0; i < list.length; i += 1) {
+      node = list[i]; 
+      if (node[field_parent] !== 0) {
+        // if you have dangling branches check that map[node.parentId] exists
+        list[map[node[field_parent]]][field_children].push(node);
+      } else {
+        roots.push(node);
+      }
+    }    
+
+    if(roots) {
+      var _return = [];
+      for(let _i in roots) {
+        if(roots[_i][field_parent] == 0) {
+          _return.push(roots[_i]);
+        }
+      }
+      return _return;
+    }
+    return _return;    
+
+  }
+
+  //Convert a list of array into tree, use this only for term
   public list_to_tree(list) {
     var map = {}, node, roots = [], i;
     for (i = 0; i < list.length; i += 1) {
@@ -127,6 +168,8 @@ export class WphelperModule {
     }
     return _return;
   }
+
+
 
   //Sort the tree array for select options
   treeSort(tree: any, depth: number = 0){

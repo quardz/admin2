@@ -9,6 +9,7 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
 import { TaxonomyComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent } from './core/components/taxonomy/taxonomy.component';
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 import { MediaComponent } from './core/components/media/media.component';
+import { MenusComponent } from './core/components/menus/menus.component';
 
 
 
@@ -31,6 +32,9 @@ const routes: Routes = [
   { path: 'admin/posts/new', component: WpeditorComponent},
 
   { path: 'admin/media/library', component: MediaComponent},
+
+  //Appearence
+  { path: 'admin/themes/menus', component: MenusComponent},
   
 
 ];   
