@@ -10,7 +10,7 @@ import { TaxonomyComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent 
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 import { MediaComponent } from './core/components/media/media.component';
 import { MenusComponent } from './core/components/menus/menus.component';
-
+import { ThemesListComponent, ThemesComponent } from './core/components/themes/themes.component';
 
 
 const routes: Routes = [
@@ -35,6 +35,7 @@ const routes: Routes = [
 
   //Appearence
   { path: 'admin/themes/menus', component: MenusComponent},
+  { path: 'admin/themes/list', component: ThemesListComponent},
   
 
 ];   

@@ -10,8 +10,12 @@
             <div class="form-inline">
               <div class="form-group mb">
                 <label for="staticEmail2">Select a menu to edit:</label>
-                <select class="form-control form-control-tn ml-2 mr-2" id="current_menu_key" name = "current_menu_key"  [(ngModel)]="current_menu_key" >
-                <option *ngFor="let _menu of menus" [ngValue] = "_menu.name">{{_menu.title}}</option>
+                <select class="form-control form-control-tn ml-2 mr-2"  id="current_menu_key" name = "current_menu_key"  [(ngModel)]="current_menu_key" >
+                <option value ="">Select Menu</option>
+                <ng-container *ngFor="let _menu of menus">
+                  <option   [ngValue]="_menu.name" >{{_menu.title}}</option>
+                </ng-container>
+
                 </select>                
               </div>
               <button type="submit" class="btn btn-primary-outline btn-outline-primary btn-tn mr-2" (click)="changeMenu()">Select </button>
@@ -41,13 +45,42 @@
                 </ng-template>
               </ngb-panel>              
               <ngb-panel id="menuadd-pages" title="Pages">
-                <ng-template ngbPanelContent>coming</ng-template>
+                <ng-template ngbPanelContent>
+                  <form  #pagelinkform = "ngForm" (ngSubmit) = "onClickSubmitpostlinkform(pagelinkform.value, 'page', pagelinkform)" >
+
+                    <div class="form-check" *ngFor="let page of posts.page">
+                      <input ngModel name = "{{page.ID}}" value ="page._selected" type="checkbox" class="form-check-input" id="menuitempage-{{page.ID}}"/>
+                      <label class="form-check-label" for="menuitempage-{{page.ID}}">{{page.post_title}}</label>
+                    </div>
+                    <button class="btn btn-outline-primary btn-tn mb-3 float-right">Add to menu</button>
+
+                  </form>
+                </ng-template>
               </ngb-panel>
               <ngb-panel id="menuadd-posts" title="Posts">
-                <ng-template ngbPanelContent>posts</ng-template>
+                <ng-template ngbPanelContent>
+                  <form  #postlinkform = "ngForm" (ngSubmit) = "onClickSubmitpostlinkform(postlinkform.value, 'post', pagelinkform)" >
+
+                    <div class="form-check" *ngFor="let page of posts.post">
+                      <input ngModel name = "{{page.ID}}" [(ngModel)] = "page._selected" value ="page._selected" type="checkbox" class="form-check-input" id="menuitempage-{{page.ID}}"/>
+                      <label class="form-check-label" for="menuitempage-{{page.ID}}">{{page.post_title}}</label>
+                    </div>
+                    <button class="btn btn-outline-primary btn-tn mb-3 float-right">Add to menu</button>
+
+                  </form>
+                </ng-template>
               </ngb-panel>
               <ngb-panel id="menuadd-categories" title="Categories">
-                <ng-template ngbPanelContent>categories links</ng-template>
+                <ng-template ngbPanelContent>
+                  <form  #categorylinkform = "ngForm" (ngSubmit) = "onClickSubmitcategorylinkform(categorylinkform.value)" >
+
+                    <div class="form-check" *ngFor="let _cat of categories">
+                      <input ngModel name = "{{_cat.value}}" [(ngModel)] = "_cat._selected" value ="_cat._selected" type="checkbox" class="form-check-input" id="menuitemcat-{{_cat.value}}"/>
+                      <label class="form-check-label" for="menuitemcat-{{_cat.value}}">{{_cat.label}}</label>
+                    </div>
+                    <button class="btn btn-outline-primary btn-tn mb-3 float-right">Add to menu</button>
+                  </form>
+                </ng-template>
               </ngb-panel>
             </ngb-accordion>
           </div>
@@ -60,17 +93,15 @@
                     <label for="staticEmail2" class="mr-3">Menu Name</label>
                   </div>
                   <div class="form-group mr-2">
-                    <input type="text" class="form-control" required>
+                    <input type="text" class="form-control" required name = "current_menu_title" [(ngModel)] = "current_menu_title">
                   </div>
-                  <a class="btn btn-outline-primary float-right">Save</a>
+                  <a class="btn btn-outline-primary float-right" (click) = "saveMenu()">Save Menu</a>
                 </form>
+                
               </div>
               <div class="card-body">
                 <div class="card-text">
                   <small>Drag the items into the order you prefer. Click the arrow on the right of the item to reveal additional configuration options.</small>
-                  <ul>
-                    <li *ngFor="let item of menus[current_menu_index].items">{{item.link}} -- {{item.title}}</li>
-                  </ul>
                   <div class = "mt-5 mb-5">
                     <div class="section-bdy">
                       <menu-item [listitem]="{children:current_menu}" [isRoot]="true"></menu-item>
@@ -86,7 +117,7 @@
                     <a class = "small text-danger" (click) = "deleteMenu()">Delete Menu</a>
                   </div>
                   <div class = "col-sm-9">
-                    <a class = "btn btn-outline-primary btn-tn float-right">Save Menu</a>
+                    <a class = "btn btn-outline-primary btn-tn float-right" (click) = "saveMenu()">Save Menu</a>
                   </div>
                 </div>
               </div>
@@ -110,16 +141,27 @@
           </thead>
           <tbody>
             <tr *ngFor="let location of locations">
-              <th scope="row">{{location.title}}</th>
+              <th scope="row">{{location.title}}</th> 
               <td>
                 <select class="form-control form-control-tn ml-2 mr-2" [(ngModel)]="location.menu">
-                  <option *ngFor="let _menu of menus" [ngValue] = "_menu.name">{{_menu.title}}</option>
+                  <option value ="">Select Menu</option>
+                <ng-container *ngFor="let _menu of menus">
+                  <option  [ngValue]="_menu.name" >{{_menu.title}}</option>
+                </ng-container>
+
+
                 </select>                                
               </td>
             </tr>
           </tbody>
         </table>
-        <div class = ""><a class = "btn btn-primary">Save Changes</a></div>
+        <div class = ""><a class = "btn btn-primary" (click) = "saveLocations()">Save Changes</a></div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="2">
+      <a ngbNavLink>Add Menu</a>
+      <ng-template ngbNavContent>
+        Coming soon@todo
       </ng-template>
     </li>
     </ul>

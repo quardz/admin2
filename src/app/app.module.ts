@@ -39,6 +39,8 @@ import { ngfModule, ngf } from "angular-file";
 import { MediaComponent } from './core/components/media/media.component';
 import { MenusComponent } from './core/components/menus/menus.component';
 import { MenuItemComponent } from './core/components/menus/menu-item.component';
+import { WidgetsComponent } from './core/components/widgets/widgets.component';
+import { ThemesComponent,ThemesListComponent } from './core/components/themes/themes.component';
 
 
 var _formly_settings = {
@@ -81,7 +83,9 @@ export function WpDBProvider(wpcore: WpcoreService) {
     WpeditorComponent,
     MediaComponent,
     MenusComponent,   
-    MenuItemComponent, 
+    MenuItemComponent, WidgetsComponent,
+    ThemesListComponent, ThemesComponent,
+
   ],
   imports: [
     BrowserModule,

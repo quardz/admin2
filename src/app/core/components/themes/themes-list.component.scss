@@ -1,0 +1,60 @@
+.titem {
+
+  .card {
+    height: 270px;
+    overflow: hidden;
+    .screenshot {
+      height: 220px;
+      overflow: hidden; 
+      min-height: 220px;
+      position: relative;
+      .tdetails {
+        position: absolute;
+        left: 30%;
+        top: 40%;
+        background: black;
+        color: #ffffff;
+        z-index: 123;
+        padding: 8px 15px;
+        border-radius: 3px;
+        opacity: 0.6;
+        display: none;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+    .card-body {
+      padding: 0px 1.25rem;
+      .titemname{
+        padding-top: 13px;
+      }
+        .titem-ab {
+          display: none;
+          text-align: right;
+          margin-top: 7px;
+        }      
+    }
+  }
+
+
+  .titem-info {
+    height: 50px;
+  }
+
+  
+}
+
+.titem:hover {
+  .tdetails{
+    display: inline !important;
+  }
+  .titemname {
+    display: none !important;
+  }
+  .titem-ab {
+    display: block !important;
+  }
+}

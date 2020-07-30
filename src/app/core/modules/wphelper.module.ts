@@ -13,6 +13,20 @@ import * as cloneDeep from 'lodash/cloneDeep';
 })
 export class WphelperModule { 
 
+  public getPostsByType(posts, post_type, post_status = "publish") {
+    var _filter = {
+      post_type: post_type,
+      post_status: post_status,
+    }
+    return this.getEntitiesByFilter(posts, _filter);
+  }
+
+  public getEntitiesByFilter(entities, filter) {
+    if(entities && filter) {
+      return _.where(entities, filter);
+    }
+    return false;
+  }
 
   public isValidUrl(string) {
     try {
@@ -172,17 +186,20 @@ export class WphelperModule {
 
 
   //Sort the tree array for select options
-  treeSort(tree: any, depth: number = 0){
+  treeSort(tree: any, depth: number = 0, delimeter = "-"){
     var options = [];
     if(depth == 0) {
       options.push({label:'None', value:0});
     }
     for(let _i in tree) {
-      var label = "-".repeat(depth) + " " + tree[_i].name
-
+      var _prefix = delimeter.repeat(depth);
+      if(depth) {
+        _prefix = _prefix + " ";
+      }
+      var label = _prefix + tree[_i].name
       options.push({label:label, value: tree[_i].term_id});
       if(_.size(tree[_i].children)) {
-        var children = this.treeSort(tree[_i].children, depth + 1);
+        var children = this.treeSort(tree[_i].children, depth + 1, delimeter);
         if(children) {
           for(let _j in children) {
             options.push({label:children[_j].label, value: children[_j].value});
