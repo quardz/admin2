@@ -10,12 +10,7 @@ import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu } from '../../wpinterface';
 import { WpcoreService } from '../../wpcore.service';
 import { WphelperModule } from '../../modules/wphelper.module';
-import { MenuItemComponent } from './menu-item.component'
-
-
-
-
-
+import { MenuItemComponent } from './menu-item.component';
 
 @Component({
   selector: 'app-menus',
@@ -100,8 +95,6 @@ export class MenusComponent implements OnInit {
         this.current_menu[_i].isCollapsed = true;
       }
     }
-    console.log("current_menu menu", this.current_menu);
-    //this.wphelper.list2tree(this.current_menu, 'id', 'children', 'parent');
   }
 
   getNextMenuID() {
@@ -232,7 +225,6 @@ export class MenusComponent implements OnInit {
         this.menus[_i].title = this.current_menu_title;
         this.menus[_i].items = tree;
         this.toastr.success('Saved!', "Saved '" + this.current_menu_title + "' menu successfully!");
-        console.log("saved menu", this.menus[_i]);
       }
     }
   }
@@ -280,11 +272,9 @@ export class MenusComponent implements OnInit {
         children: [],
         isCollapsed: true,
         removed: false,
-        entity_label: 'Custom Link',//this.menutypes['link'],
+        entity_label: 'Custom Link',
       }
       this.addMenuItem(menuItem);
-      //item.newlink_url = '';
-      //item.newlink_text = '';
     }
   }
 
@@ -367,9 +357,5 @@ export class MenusComponent implements OnInit {
       }
     }
     this.getCategoryMenu();
-    console.log("submited form", formValue);
   }
-
 }
-
-

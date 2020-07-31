@@ -1,1 +1,75 @@
-<p>widgets works!</p>
+<h1 class = "page-title">Widgets</h1>
+<div class = "row">
+  <div class = "col-sm-12 col-md-5 col-widgets">
+    <h2 class = "title-sub">Avaliable Widgets</h2>
+    <small>To activate a widget drag it to a sidebar or click on it. To deactivate a widget and delete its settings, drag it back.</small>
+    <div class = "row" [ngClass] = "{'widselected': curWidget}">
+      <div class = "col-md-6 col-sm-12 col-widget-item mb-2" *ngFor = "let widget of widgets" [ngClass] = "{'openedwid': curWidget && curWidget == widget.machine_name}">
+        <div class = "w-100">
+        <a type="button" class="btn btn-secondary widhead w-100" (click)="widget.isWidCollapsed = !widget.isWidCollapsed; curWidget = widget.machine_name; widgetToggle(widget.machine_name)"
+        [attr.aria-expanded]="!widget.isWidCollapsed" attr.aria-controls="widget-{{widget.machine_name}}">
+        {{widget.title}}
+        </a>
+        <small class = "p-2">{{widget.description}}</small>
+        </div>
+
+        <div id="widget-{{widget.machine_name}}" [ngbCollapse]="!widget.isWidCollapsed">
+          <div class="card">
+            <div class="card-body">
+              
+              <div class="btn-group-vertical mb-2 w-100">
+                  <a type="button" class="btn btn-outline-secondary btn-tn text-left" (click) = "widRegSelected[widget.machine_name] = _region.machine_name" *ngFor = "let _region of regions" [ngClass]="{'selected-reg': widRegSelected[widget.machine_name] == _region.machine_name}">
+                  <i class = "menu-icon mdi mdi-check"></i>{{_region.title}}
+                </a>
+              </div>
+              <div class="w-100" role="group">
+                <a type="button" (click) = "widRegSelected[widget.machine_name] = ''; widget.isWidCollapsed = !widget.isWidCollapsed" class="btn btn-outline-primary btn-tn text-primary float-left">cancel</a>
+                <a type="button" class="btn btn-primary btn-tn text-white float-right" (click) = "addWidget(widget.machine_name, widRegSelected[widget.machine_name])">Add Widget</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> 
+    </div>
+  </div>
+  <div class = "col-sm-12 col-md-7 col-regions">
+    <h2 class = "title-sub">Avaliable Widgets</h2>
+    <div class = "row">
+        
+      <div class = "col-md-6 col-sm-12 col-region-item border-secondary bg-white p-2" *ngFor = "let _region of regions">
+        <div class = "w-100">
+          <a type="button" class="reghead w-100" >
+          {{_region.title}}
+          </a>
+          <div class = "wid-desp w-100">
+          <small class = "p-2">{{_region.description}}</small>
+          </div>
+          
+      
+          <div id="region-{{_region.machine_name}}" >
+            <div class="card">
+              <div class="card-body">
+                <small>Add Widgets here</small>
+                <!-- Region widget starts -->
+                <div class = "w-100" *ngFor = "let regwit of regwids[_region.machine_name]">
+                
+
+{{regwit.title}}
+
+                  <form [formGroup]="regwit.form" (ngSubmit)="onSubmit()">
+                    <formly-form [form]="regwit.form" [fields]="regwit.fields" [model]="regwit.model"></formly-form>
+                    <button type="submit" class="btn btn-outline-primary btn-md" [disabled]="!regwit.form.valid">Save</button>
+                  </form>
+                </div>
+
+                <!-- Region widget ends -->
+
+              </div>
+            </div>
+          </div>  <!-- region body -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -36,6 +36,15 @@ export interface IRegion {
   machine_name: string, //This should be unique machine name
   description?: string, 
   weight?: number,
+}  
+
+export interface IWidRegMap{ 
+  widget: IWidget,
+  region: IRegion,
+  weight: number,
+  title: string,
+  settings: any,
+  status: number, //weather this is enabled or disabled
 }
 
 export interface IMenuItem {
@@ -47,7 +56,7 @@ export interface IMenuItem {
   entity_type?: string,
   entity_id?: string,
   target?: string,
-  attributes?: any,
+  attributes?: any, 
   description?: any,
 }
 

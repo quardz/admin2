@@ -1,0 +1,33 @@
+.widselected {
+  .col-widget-item {
+    opacity: 0.6;
+  }  
+  .openedwid {
+    opacity: 1 !important;
+  }
+}
+.col-widget-item {
+
+  .btn-group-vertical {
+    .btn {
+      padding-top: 9px !important;
+      padding-bottom: 9px !important;    
+    }
+  }
+  .btn i {
+    visibility: hidden;
+  }
+  .selected-reg {
+    color: #fff;
+    background-color: #308ee0;
+    border-color: #308ee0;
+    i {
+      visibility: visible;
+    }
+  }
+}
+
+.wid-desp {
+  height: 75px;
+  
+}

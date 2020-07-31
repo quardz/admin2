@@ -11,6 +11,7 @@ import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component
 import { MediaComponent } from './core/components/media/media.component';
 import { MenusComponent } from './core/components/menus/menus.component';
 import { ThemesListComponent, ThemesComponent } from './core/components/themes/themes.component';
+import { WidgetsComponent } from './core/components/widgets/widgets.component';
 
 
 const routes: Routes = [
@@ -34,8 +35,9 @@ const routes: Routes = [
   { path: 'admin/media/library', component: MediaComponent},
 
   //Appearence
-  { path: 'admin/themes/menus', component: MenusComponent},
   { path: 'admin/themes/list', component: ThemesListComponent},
+  { path: 'admin/themes/menus', component: MenusComponent},
+  { path: 'admin/themes/widgets', component: WidgetsComponent}, 
   
 
 ];   

@@ -7,6 +7,7 @@ import * as _ from 'underscore';
 import * as cloneDeep from 'lodash/cloneDeep';
 
 import { WphelperModule } from './modules/wphelper.module';
+import { WpdataService } from './wpdata.service';
 
 interface ISites {
   name?: string,
@@ -41,10 +42,15 @@ export class WpcoreService {
     'terms': 'term_id',
   };
 
+  public currentTheme = 'author';
+
   public entityDefines = {};
 
 
-  constructor(private http: HttpClient, private wphelper: WphelperModule) {
+  constructor(private http: HttpClient, 
+      private wphelper: WphelperModule,
+      private wpdata: WpdataService,
+      ) {
     this.loadSites();
     this.resolveDataURL();
 
@@ -481,6 +487,31 @@ export class WpcoreService {
         return true;
     }
     return false;
+  }
+
+
+  // Themes / regions / widgets
+  setTheme(theme) {
+    this.currentTheme = theme;
+  }
+
+  getTheme() {
+    return this.currentTheme; 
+  }
+
+  getThemes() { 
+    return this.wpdata.getThemes();
+  }
+
+  getRegions(theme?:string) {
+    if(!theme) {
+      theme = this.currentTheme;
+    }
+    return this.wpdata.getRegions(theme);
+  }
+
+  getWidgets() {
+    return this.wpdata.getWidgets();
   }
 
 }

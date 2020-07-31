@@ -20,15 +20,15 @@ Wr-Map (per them)
 
 
 List of default widgets
-  Menu
-  search
-  recent post
-  pages
+  Menu *-
+  search * 
+  recent post * 
+  pages 
   custom html
-  categories
+  categories * 
   tags
-  archives
-  brands(logos etc)
+  archives * 
+  calender 
 
 
 ---
@@ -68,4 +68,10 @@ Theme fields
   widgets []
   default_widget: []
   extra_data: {}
+
+cd /var/www/wptest
+rm -rf /var/www/wptest/first/wp-admin/ /var/www/wptest/first/wp-includes
+unzip latest.zip
+cp -r /var/www/wptest/wordpress/wp-includes /var/www/wptest/first/
+cp -r /var/www/wptestwordpress/wp-admin /var/www/wptest/first/
 
