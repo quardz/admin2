@@ -20,17 +20,35 @@ import { WphelperModule } from '../../modules/wphelper.module';
 }) 
 export class WidgetsComponent implements OnInit {
 
-  regions: any;//[];
-  theme: ITheme[];
-  widgets: any;//[];
-  widreg_map: IWidRegMap[];
+  regions: any; //list of regions 
+  theme: ITheme[]; //current theme
+  widgets: any; //List of saveWidgets
+  widreg_map: any = {}; //Map of reg wids, this is to be saved in DB
+  regwids: any = {}; // SAme as widreg_map but this is for admin purpose. 
   isWidCollapsed:any = {};
   isRegCollapsed:any = {};
-  curWidget: string = '';
-  regwids: any = {};
+  
+  curWidget: string = ''; 
+  
 
   widRegSelected: any = {};
 
+  regWidsDelta: number = 1; //Holds the next delta id for each reagi
+
+
+  sortable_options: SortablejsOptions = {
+      group: 'test',
+      onUpdate: () => {
+        console.log('updated', this.regwids);
+      },
+      onAdd: () => {
+        console.log('added', this.regwids);
+      },
+      onRemove: () => {
+        console.log('removed', this.regwids);
+      },
+  };
+    
 
   constructor(private wpcore: WpcoreService) { 
     this.getWidgets();
@@ -44,11 +62,15 @@ export class WidgetsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getRegWidsDelta(){
+    return this.regWidsDelta;
+  }
+
   getWidgets(){
     this.widgets = this.wpcore.getWidgets();
     for(let _w in this.widgets) {
-      this.isWidCollapsed[this.widgets[_w].machine_name] = true;
-      this.widRegSelected[this.widgets[_w].machine_name] = '';
+      this.isWidCollapsed[_w] = true;
+      this.widRegSelected[_w] = '';
     }
   }
 
@@ -56,7 +78,8 @@ export class WidgetsComponent implements OnInit {
     this.regions = this.wpcore.getRegions();
     for(let _w in this.regions) {
       this.isRegCollapsed[this.regions[_w].machine_name] = false;
-    }    
+      this.regWidsDelta
+    }
   }
 
   saveWidgets() {
@@ -79,7 +102,7 @@ export class WidgetsComponent implements OnInit {
 
   getWidget(machine_name){
     for(let w in this.widgets) {
-      if(machine_name == this.widgets[w].machine_name) {
+      if(machine_name == w) {
         return cloneDeep(this.widgets[w]);
       }
     }
@@ -93,11 +116,14 @@ export class WidgetsComponent implements OnInit {
     var form = new FormGroup({});
     var fields: FormlyFieldConfig[] = [];
     fields = cloneDeep(_widget.inputs);
-    console.log("form fields", fields, _widget); 
+
+    this.regWidsDelta++;
+
     _widget.fields = fields;
     _widget.form = form; 
     _widget.model = {};
-
+    _widget.delta = this.getRegWidsDelta();
+    _widget.isWidCollapsed = true;
 
     if(!_.has(this.regwids, region_mn)) {
       this.regwids[region_mn] = []; 
@@ -118,8 +144,35 @@ export class WidgetsComponent implements OnInit {
 
   }
 
-  onSubmit() {
+  deleteRegWid(region, delta) {
+    console.log("delete styff", region, delta);
+    /*
+    if(_.has(this.regwids, region)) {
+      for(let _i in this.regwids[region]) {
+        if(this.regwids[region][_i].delta == delta) {
+          delete this.regwids[region][_i];
+        }
+      }
+    }
+    */
+  }
 
+  onSubmit(region, widget, data = null, delta = 0,weight = 0) {
+
+
+
+    if(region && widget) {
+      if(!_.has(this.widreg_map, region)) {
+        this.widreg_map[region] = {};
+      }
+      this.widreg_map[region][delta] = {
+        data: data,
+        weight: weight,
+      };
+    }
+    //create gaint array,
+    //keep it sync with regwids
+    console.log("submit regwid",region, widget, data, this.widreg_map);
   }
 
 }

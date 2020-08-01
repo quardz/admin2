@@ -25,8 +25,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormlyHorizontalWrapper } from './core/components/settings/horizontal-wrapper';
 import { SidebarComponent } from './core/components/sidebar/sidebar.component';
+import { FooterComponent } from './core/components/sidebar/footer.component';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
-import { FooterComponent } from './core/components/footer/footer.component';
 import { TaxonomyComponent, TaxonomyFormComponent, TaxonomyCategoryComponent, TaxonomyPosttagComponent } from './core/components/taxonomy/taxonomy.component';
 import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
   SettingsMediaComponent, SettingsPermalinkComponent, SettingsReadingComponent,
@@ -41,6 +41,7 @@ import { MenusComponent } from './core/components/menus/menus.component';
 import { MenuItemComponent } from './core/components/menus/menu-item.component';
 import { WidgetsComponent } from './core/components/widgets/widgets.component';
 import { ThemesComponent,ThemesListComponent } from './core/components/themes/themes.component';
+import { DashboardComponent } from './core/components/dashboard/dashboard.component';
 
 
 var _formly_settings = {
@@ -84,7 +85,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     MediaComponent,
     MenusComponent,   
     MenuItemComponent, WidgetsComponent,
-    ThemesListComponent, ThemesComponent,
+    ThemesListComponent, ThemesComponent, DashboardComponent,
 
   ],
   imports: [

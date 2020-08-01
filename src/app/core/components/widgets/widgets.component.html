@@ -4,27 +4,28 @@
     <h2 class = "title-sub">Avaliable Widgets</h2>
     <small>To activate a widget drag it to a sidebar or click on it. To deactivate a widget and delete its settings, drag it back.</small>
     <div class = "row" [ngClass] = "{'widselected': curWidget}">
-      <div class = "col-md-6 col-sm-12 col-widget-item mb-2" *ngFor = "let widget of widgets" [ngClass] = "{'openedwid': curWidget && curWidget == widget.machine_name}">
+      <div class = "col-md-6 col-sm-12 col-widget-item mb-2" *ngFor = "let widget of widgets | keyvalue" [ngClass] = "{'openedwid': curWidget && curWidget == widget.value.machine_name}">
         <div class = "w-100">
-        <a type="button" class="btn btn-secondary widhead w-100" (click)="widget.isWidCollapsed = !widget.isWidCollapsed; curWidget = widget.machine_name; widgetToggle(widget.machine_name)"
-        [attr.aria-expanded]="!widget.isWidCollapsed" attr.aria-controls="widget-{{widget.machine_name}}">
-        {{widget.title}}
+
+        <a type="button" class="btn btn-link border-secondary bg-white widhead w-100 pl-1 pr-1" (click)="widget.isWidCollapsed = !widget.isWidCollapsed; curWidget = widget.value.machine_name; widgetToggle(widget.value.machine_name)"
+        [attr.aria-expanded]="!widget.isWidCollapsed" attr.aria-controls="widget-{{widget.value.machine_name}}">
+        {{widget.value.title}}
         </a>
-        <small class = "p-2">{{widget.description}}</small>
+        <small class = "p-2">{{widget.value.description}}</small>
         </div>
 
-        <div id="widget-{{widget.machine_name}}" [ngbCollapse]="!widget.isWidCollapsed">
+        <div id="widget-{{widget.value.machine_name}}" [ngbCollapse]="!widget.isWidCollapsed">
           <div class="card">
             <div class="card-body">
               
               <div class="btn-group-vertical mb-2 w-100">
-                  <a type="button" class="btn btn-outline-secondary btn-tn text-left" (click) = "widRegSelected[widget.machine_name] = _region.machine_name" *ngFor = "let _region of regions" [ngClass]="{'selected-reg': widRegSelected[widget.machine_name] == _region.machine_name}">
-                  <i class = "menu-icon mdi mdi-check"></i>{{_region.title}}
+                  <a type="button" class="btn btn-outline-secondary btn-tn text-left" (click) = "widRegSelected[widget.value.machine_name] = _region.value.machine_name" *ngFor = "let _region of regions | keyvalue" [ngClass]="{'selected-reg': widRegSelected[widget.value.machine_name] == _region.value.machine_name}">
+                  <i class = "menu-icon mdi mdi-check"></i>{{_region.value.title}}
                 </a>
               </div>
               <div class="w-100" role="group">
-                <a type="button" (click) = "widRegSelected[widget.machine_name] = ''; widget.isWidCollapsed = !widget.isWidCollapsed" class="btn btn-outline-primary btn-tn text-primary float-left">cancel</a>
-                <a type="button" class="btn btn-primary btn-tn text-white float-right" (click) = "addWidget(widget.machine_name, widRegSelected[widget.machine_name])">Add Widget</a>
+                <a type="button" (click) = "widRegSelected[widget.value.machine_name] = ''; widget.isWidCollapsed = !widget.isWidCollapsed" class="btn btn-outline-primary btn-tn text-primary float-left">cancel</a>
+                <a type="button" class="btn btn-primary btn-tn text-white float-right" (click) = "addWidget(widget.value.machine_name, widRegSelected[widget.value.machine_name])">Add Widget</a>
               </div>
             </div>
           </div>
@@ -34,35 +35,48 @@
     </div>
   </div>
   <div class = "col-sm-12 col-md-7 col-regions">
-    <h2 class = "title-sub">Avaliable Widgets</h2>
+    <h2 class = "title-sub">Theme regions</h2>
     <div class = "row">
         
-      <div class = "col-md-6 col-sm-12 col-region-item border-secondary bg-white p-2" *ngFor = "let _region of regions">
-        <div class = "w-100">
-          <a type="button" class="reghead w-100" >
-          {{_region.title}}
+      <div class = "col-md-6 col-sm-12 col-region-item p-2" *ngFor = "let _region of regions | keyvalue">
+        <div class = "w-100 border-secondary bg-white">
+          <a type="button" class="reghead w-100 pl-4 pt-3 btn btn-secondary pr-4" >
+          {{_region.value.title}}
           </a>
-          <div class = "wid-desp w-100">
-          <small class = "p-2">{{_region.description}}</small>
+          <div class = "wid-desp pl-4 pr-4 pt-1 w-100">
+            <p class = "pt-2">{{_region.value.description}}</p>
+            <p>Add Widgets here.</p>
           </div>
           
       
-          <div id="region-{{_region.machine_name}}" >
-            <div class="card">
+          <div id="region-{{_region.key}}" >
+            <div class="card border-0">
               <div class="card-body">
-                <small>Add Widgets here</small>
-                <!-- Region widget starts -->
-                <div class = "w-100" *ngFor = "let regwit of regwids[_region.machine_name]">
                 
+                <!-- Region widget starts -->
+                <div class="item-child"  *ngIf="regwids[_region.key]" [sortablejs]="regwids[_region.key]"  [sortablejsOptions]="sortable_options">
 
-{{regwit.title}}
-
-                  <form [formGroup]="regwit.form" (ngSubmit)="onSubmit()">
-                    <formly-form [form]="regwit.form" [fields]="regwit.fields" [model]="regwit.model"></formly-form>
-                    <button type="submit" class="btn btn-outline-primary btn-md" [disabled]="!regwit.form.valid">Save</button>
-                  </form>
+                <div class = "w-100 mb-4" *ngFor = "let regwid of regwids[_region.key]">
+                
+                  <a type="button" class="btn btn-secondary rwhead w-100" (click)="regwid.isWidCollapsed = !regwid.isWidCollapsed;"
+                  [attr.aria-expanded]="!regwid.isWidCollapsed" attr.aria-controls="regwid-{{regwid.delta}}">
+                    {{regwid.title}}
+                  </a>
+                  <div id="regwid-{{regwid.delta}}" [ngbCollapse]="!regwid.isWidCollapsed">
+                    <form [formGroup]="regwid.form" (ngSubmit)="onSubmit(_region.key, regwid.machine_name, regwid.model, regwid.delta, 0)">
+                      <formly-form [form]="regwid.form" [fields]="regwid.fields" [model]="regwid.model">  
+                      </formly-form>
+                      <div class = "w-100">
+                      <span class = "">
+                        <a class = "small text-danger" (click) = "deleteRegWid(_region.key, regwid.delta)">Delete</a> <span> | </span> <a class = "small" (click) = "regwid.isWidCollapsed = true">Done</a>
+                      </span>
+                      <button type="submit" class="btn btn-outline-primary btn-tn float-right" [disabled]="!regwid.form.valid">Save</button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
 
+                </div>
                 <!-- Region widget ends -->
 
               </div>

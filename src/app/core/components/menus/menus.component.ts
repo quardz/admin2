@@ -4,7 +4,6 @@ import { FormGroup,FormsModule } from '@angular/forms';
 import * as _ from 'underscore';
 import * as cloneDeep from 'lodash/cloneDeep';
 import { ToastrService } from 'ngx-toastr';
-import { TreeModule } from '@circlon/angular-tree-component';
 import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu } from '../../wpinterface';
@@ -225,8 +224,11 @@ export class MenusComponent implements OnInit {
         this.menus[_i].title = this.current_menu_title;
         this.menus[_i].items = tree;
         this.toastr.success('Saved!', "Saved '" + this.current_menu_title + "' menu successfully!");
+        console.log(this.menus[_i]);
+        break;
       }
     }
+    
   }
 
   _purifyMenu(tree){

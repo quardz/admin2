@@ -41,10 +41,10 @@ export interface IRegion {
 export interface IWidRegMap{ 
   widget: IWidget,
   region: IRegion,
-  weight: number,
-  title: string,
-  settings: any,
-  status: number, //weather this is enabled or disabled
+  weight?: number,
+  title?: string,
+  settings?: any,
+  status?: number, //weather this is enabled or disabled
 }
 
 export interface IMenuItem {

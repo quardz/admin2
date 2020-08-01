@@ -12,12 +12,13 @@ import { MediaComponent } from './core/components/media/media.component';
 import { MenusComponent } from './core/components/menus/menus.component';
 import { ThemesListComponent, ThemesComponent } from './core/components/themes/themes.component';
 import { WidgetsComponent } from './core/components/widgets/widgets.component';
+import { DashboardComponent } from './core/components/dashboard/dashboard.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
 
-  { path: 'admin/dashboard', component: SettingsComponent },
+  { path: 'admin/dashboard', component: DashboardComponent },
   { path: 'admin/settings/general', component: SettingsGeneralComponent },
   { path: 'admin/settings/discussion', component: SettingsDiscussionComponent },
   { path: 'admin/settings/media', component: SettingsMediaComponent },
