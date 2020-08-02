@@ -42,17 +42,16 @@ export class MenusComponent implements OnInit {
   categories: any;
   categoryTitle: any = {};
 
-  active = 1;
-
+  activeTag = 1;
+  new_menu_name: string = '';
   
 
 
 
-  name = 'Angular 6';
 
 
   options: SortablejsOptions = {
-    group: 'test',
+    group: 'meunus',
     onUpdate: () => {
       console.log('updated');
     },
@@ -174,7 +173,22 @@ export class MenusComponent implements OnInit {
   }
 
   createMenu() {
+    var _menu_keys = _.pluck(this.menus, 'name');
+    var menu_key = this.wphelper.getUniqueSlug(this.new_menu_name, _menu_keys);
+    if(menu_key && this.new_menu_name) {
+      var _new_menu = {
+        title: this.new_menu_name,
+        name: menu_key,
+        items: [],
+      };
+      this.menus.push(_new_menu);
+      this.current_menu_key = menu_key;
+      this.changeMenu();
+      this.activeTag = 1;
+      this.toastr.success('Success!', "Created '" + this.new_menu_name + "' menu successfully!");
 
+    }
+    console.log("new menu is ", this.new_menu_name, this.menus);
   }
 
   deleteMenu() {
@@ -223,12 +237,11 @@ export class MenusComponent implements OnInit {
       if(this.menus[_i].name == this.current_menu_key) {
         this.menus[_i].title = this.current_menu_title;
         this.menus[_i].items = tree;
-        this.toastr.success('Saved!', "Saved '" + this.current_menu_title + "' menu successfully!");
-        console.log(this.menus[_i]);
         break;
       }
     }
-    
+    this.wpcore.setThemeSettings('menus', this.menus);
+    this.toastr.success('Saved!', "Saved '" + this.current_menu_title + "' menu successfully!");
   }
 
   _purifyMenu(tree){
@@ -253,8 +266,15 @@ export class MenusComponent implements OnInit {
   }
 
   saveLocations(){
-    this.toastr.success('Saved menu locations successfully!', "Success");
+    var locations = {};
+    for(let _l in this.locations) {
+      locations[this.locations[_l].name] = this.locations[_l].menu;
+    }
 
+    this.wpcore.setThemeSettings('menu_locations', locations);
+        console.log("menu locations", locations);
+
+    this.toastr.success('Saved locations successfully!', "Success");
   }
 
   removeMenuItem(id) {
@@ -269,8 +289,6 @@ export class MenusComponent implements OnInit {
         entity_id: '',
         link: item.newlink_url,
         title: item.newlink_text,
-        weight: 0,
-        parent: 0,
         children: [],
         isCollapsed: true,
         removed: false,
@@ -304,8 +322,6 @@ export class MenusComponent implements OnInit {
             entity_id: parseInt(_p),
             //link: ,
             title: this.postTitles[_p],
-            weight: 0,
-            parent: 0,
             children: [],
             isCollapsed: true,
             removed: false,
@@ -347,8 +363,6 @@ export class MenusComponent implements OnInit {
             entity_id: parseInt(_p),
             //link: ,
             title: this.categoryTitle[_p],
-            weight: 0,
-            parent: 0,
             children: [],
             isCollapsed: true,
             removed: false,

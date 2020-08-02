@@ -6,6 +6,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import * as _ from 'underscore';
 
+import { MediaModule } from '../../modules/media.module';
+
 
 export interface IWpFile {
   filename: string,
@@ -43,8 +45,9 @@ export class MediaComponent implements OnInit {
 
   filekeys = [];
 
-  constructor(private storage: StorageMap) { 
+  constructor(private storage: StorageMap, private media: MediaModule) { 
     this.renderFiles();
+    this.getFiles();
   }
 
   renderFiles() {
@@ -53,15 +56,19 @@ export class MediaComponent implements OnInit {
         console.log("renderfiles", key, this.filekeys);
         this.filekeys.push(key);
         this.storage.get(key).subscribe((data) => {
-          console.log("get data for ", key, data);
+          console.log("get data for ", key);
         })
       }
     });
   }
 
   getFiles() {
-    var files = this.storage.keys();
-    console.log(files);
+    console.log("into get files");
+    var files = this.storage.keys().subscribe({
+      next: (key) => {
+        console.log("getting files", key);
+      }
+    });
   }
 
   getNextFileId() {
@@ -72,7 +79,8 @@ export class MediaComponent implements OnInit {
     console.log("save files", text, this.files);
 
     for(let _i in this.files) {
-      this.saveFile(this.files[_i], _i);
+      this.media.saveFile(this.files[_i]);
+      //this.saveFile(this.files[_i], _i);
     }
   }
 
@@ -98,9 +106,8 @@ export class MediaComponent implements OnInit {
             });
 
             storage.get('file_'+index).subscribe((__data) => {
-              console.log("file_ ", __data); 
+              //console.log("file_ ", __data); 
             });
-
           });
 
         }

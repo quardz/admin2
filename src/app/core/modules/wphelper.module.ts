@@ -229,8 +229,23 @@ export class WphelperModule {
     //name, slug, category, parent
   }
 
+  public getUniqueSlug(text:string, list:any) {
+    var slug = this.slugify(text);
+    var _init_slug = slug; 
+    var count = 1;
+    while(1) {
+      if(_.contains(list, slug)) {
+        slug = _init_slug + "_" + count;
+        count++;
+      }
+      else {
+        return slug;
+      }
+    }
+  }
+
   //Create slug from string
-  public slugify(str) {
+  public slugify(str, replacer = "-") {
     str = str.replace(/^\s+|\s+$/g, ''); // trim
     str = str.toLowerCase();
 
@@ -242,8 +257,8 @@ export class WphelperModule {
     }
 
     str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-    .replace(/\s+/g, '-') // collapse whitespace and replace by -
-    .replace(/-+/g, '-'); // collapse dashes
+    .replace(/\s+/g, replacer) // collapse whitespace and replace by -
+    .replace(/-+/g, replacer); // collapse dashes
 
     return str;
   }

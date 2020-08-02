@@ -18,12 +18,18 @@ export class ThemesListComponent implements OnInit {
 
   themes: ITheme[];
 
-  constructor(private wpcore: WpcoreService) {  
+  constructor(private wpcore: WpcoreService, private toastr: ToastrService,) {  
     this.themes = wpcore.getThemes();
   }
 
-  activateTheme(theme_name) {
-    console.log(theme_name);
+  activateTheme(theme, theme_title) {
+    if(theme) {
+      this.wpcore.setTheme(theme);
+      this.toastr.success('Success!', "Changed to '" + theme_title + "' theme successfully!");
+
+      console.log();
+    }
+    
   }
 
   ngOnInit(): void {}

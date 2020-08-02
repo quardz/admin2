@@ -85,7 +85,7 @@ export class WpdataService {
           {
             key: 'display_as_dropdown',
             type: 'checkbox',
-            
+            defaultValue: false,
             templateOptions: {
               label: 'Display as dropdown',
             },
@@ -119,6 +119,7 @@ export class WpdataService {
           {
             key: 'display_as_dropdown',
             type: 'checkbox',
+            defaultValue: false,
             templateOptions: {
               label: 'Display as dropdown',
             },
@@ -126,6 +127,7 @@ export class WpdataService {
           {
             key: 'show_post_counts',
             type: 'checkbox',
+            defaultValue: false,
             templateOptions: {
               label: 'Show post counts',
             },
@@ -133,6 +135,7 @@ export class WpdataService {
           {
             key: 'show_hierarchy',
             type: 'checkbox',
+            defaultValue: false,
             templateOptions: {
               label: 'Show Hierarchy',
             },
@@ -295,6 +298,7 @@ export class WpdataService {
           {
             key: 'show_tag_counts',
             type: 'checkbox',
+            defaultValue: false,
             templateOptions: {
               label: 'Show tag counts',
             },
@@ -391,5 +395,20 @@ export class WpdataService {
     return themes;
   }
 
+  //This is set of options for options table
+  getWpOptions() {
+    var options:any = {
+      themes: {
+        
+
+      },
+      widgets: {
+
+      }
+
+
+    };
+    return options;
+  }
 
 }

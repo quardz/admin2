@@ -42,6 +42,8 @@ export class WpcoreService {
     'terms': 'term_id',
   };
 
+  currentChanges:any = [];
+
   public currentTheme = 'author';
 
   public entityDefines = {};
@@ -54,6 +56,22 @@ export class WpcoreService {
     this.loadSites();
     this.resolveDataURL();
 
+  }
+
+  public addEvent(_type:string, title?:string, msg?:string, data?:any){
+    if(_type || title || msg || data) {
+      var _event = {
+        type: _type,
+        title: title,
+        msg: msg,
+        data: data,
+      };      
+      this.currentChanges.push(_event);
+    }
+  }
+
+  public getEvents() {
+    return this.currentChanges;
   }
 
   public getSemaphore(entity_type:string = '', get_next:boolean = true){
@@ -387,14 +405,14 @@ export class WpcoreService {
     return data;
   }
 
-  getOption(option_id: number|string, _default = '') { 
+  getOption(option_id: number|string, _default?:any) { 
     if(this.dbData && this.dbData.options && this.dbData.options[option_id]) {
       return this.dbData.options[option_id];
     }
     return _default;
   }
 
-  setOption(option_id: number|string, value: any = '') {
+  setOption(option_id: number|string, value?:any) {
     this.dbData.options[option_id] = value;
   }
 
@@ -492,11 +510,14 @@ export class WpcoreService {
 
   // Themes / regions / widgets
   setTheme(theme) {
-    this.currentTheme = theme;
+    if(theme) {
+      this.currentTheme = theme;
+      this.setOption('currentTheme', theme);
+    }
   }
 
   getTheme() {
-    return this.currentTheme; 
+    return this.getOption("currentTheme", this.currentTheme); 
   }
 
   getThemes() { 
@@ -513,6 +534,18 @@ export class WpcoreService {
   getWidgets() {
     return this.wpdata.getWidgets();
   }
+  //Save region widgets
+
+  setThemeSettings(key:string, data:any, theme?:string) {
+    if(!theme) {
+      theme = this.getTheme();  
+    }
+    var _data = {};
+    _data[theme] = data;
+    var current_data = this.getOption(key, _data);
+    current_data[theme] = data;
+    this.setOption(key, current_data);
+  }  
 
 }
  

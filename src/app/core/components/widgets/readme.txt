@@ -23,8 +23,8 @@ List of default widgets
   Menu *-
   search * 
   recent post * 
-  pages 
-  custom html
+  pages * 
+  custom html *
   categories * 
   tags
   archives * 
@@ -70,8 +70,8 @@ Theme fields
   extra_data: {}
 
 cd /var/www/wptest
-rm -rf /var/www/wptest/first/wp-admin/ /var/www/wptest/first/wp-includes
 unzip latest.zip
+rm -rf /var/www/wptest/first/wp-admin /var/www/wptest/first/wp-includes
 cp -r /var/www/wptest/wordpress/wp-includes /var/www/wptest/first/
-cp -r /var/www/wptestwordpress/wp-admin /var/www/wptest/first/
+cp -r /var/www/wptest/wordpress/wp-admin /var/www/wptest/first/
 

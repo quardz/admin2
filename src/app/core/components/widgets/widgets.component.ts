@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 import { FormlyFieldConfig } from '@ngx-formly/core';
+//import { NgpSortModule } from "ngp-sort-pipe";
 
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu, IWidRegMap } from '../../wpinterface';
 import { WpcoreService } from '../../wpcore.service';
@@ -39,13 +40,13 @@ export class WidgetsComponent implements OnInit {
   sortable_options: SortablejsOptions = {
       group: 'test',
       onUpdate: () => {
-        console.log('updated', this.regwids);
+        this.saveData();
       },
       onAdd: () => {
-        console.log('added', this.regwids);
+        this.saveData();
       },
       onRemove: () => {
-        console.log('removed', this.regwids);
+        this.saveData();
       },
   };
     
@@ -54,9 +55,6 @@ export class WidgetsComponent implements OnInit {
     this.getWidgets();
     this.getRegions();
     this.getPositions();
-    console.log("widgets", this.widgets, this.isWidCollapsed);
-    console.log("regions", this.regions, this.isRegCollapsed); 
-
   }
 
   ngOnInit(): void {
@@ -133,7 +131,7 @@ export class WidgetsComponent implements OnInit {
     }
     
 
-    console.log(widget_mn, region_mn, this.regwids, _widget );
+    this.saveData();
   }
 
   removeWidget(widget_delta) {
@@ -144,23 +142,39 @@ export class WidgetsComponent implements OnInit {
 
   }
 
-  deleteRegWid(region, delta) {
-    console.log("delete styff", region, delta);
-    /*
-    if(_.has(this.regwids, region)) {
-      for(let _i in this.regwids[region]) {
-        if(this.regwids[region][_i].delta == delta) {
-          delete this.regwids[region][_i];
+
+  saveData() {
+    var dataSave:any = {};
+    if(this.regwids) {
+      for(let _region in this.regwids) {  
+        dataSave[_region] = [];
+        if(this.regwids[_region]) {
+          for(let _index in this.regwids[_region]) {
+            var item = {
+              _w: this.regwids[_region][_index].machine_name,
+              _d: this.regwids[_region][_index].delta,
+              _m: this.regwids[_region][_index].model,
+            };
+            dataSave[_region].push(item);
+          }
         }
       }
     }
-    */
+    this.wpcore.setThemeSettings('regwids', dataSave);
+  }
+
+  deleteRegWid(region, delta) {
+    if(_.has(this.regwids, region)) {
+      for(let _i in this.regwids[region]) {
+        if(this.regwids[region][_i].delta == delta) {
+          this.regwids[region].splice(_i, 1);
+        }
+      }
+    }
+    this.saveData();
   }
 
   onSubmit(region, widget, data = null, delta = 0,weight = 0) {
-
-
-
     if(region && widget) {
       if(!_.has(this.widreg_map, region)) {
         this.widreg_map[region] = {};
@@ -170,9 +184,7 @@ export class WidgetsComponent implements OnInit {
         weight: weight,
       };
     }
-    //create gaint array,
-    //keep it sync with regwids
-    console.log("submit regwid",region, widget, data, this.widreg_map);
+    this.saveData();
   }
 
 }
