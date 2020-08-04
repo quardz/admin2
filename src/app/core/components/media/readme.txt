@@ -32,6 +32,7 @@ File object
   thumbs {
     [size]:fid
   },
+  file_obj: Orginal file obj,
   file_stage: //blob/server/blockchain
   blob_url: temp url, because this keep chaning 
 

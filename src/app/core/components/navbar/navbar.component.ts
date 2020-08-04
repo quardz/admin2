@@ -37,12 +37,17 @@ export class NavbarComponent implements OnInit {
     this.toastr.success('Success!', 'Changed the site');
   }
 
+  saveDB() {
+    this.wpcore.saveDBLocally();
+    this.toastr.success('Success!', 'Site is being published...you will be notified'); 
+  }
+
   host() {
      this.toastr.success('Success!', 'Site is being published...you will be notified'); 
   }
 
   getSites(){
- 
+   
   }
 
   setSites() {

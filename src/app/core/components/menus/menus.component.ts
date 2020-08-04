@@ -8,6 +8,7 @@ import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu } from '../../wpinterface';
 import { WpcoreService } from '../../wpcore.service';
+import { WpdataService } from '../../wpdata.service';
 import { WphelperModule } from '../../modules/wphelper.module';
 import { MenuItemComponent } from './menu-item.component';
 
@@ -24,6 +25,7 @@ export class MenusComponent implements OnInit {
   current_menu_title: string = '';
   current_menu: any = [];
   locations: any;
+  location_settings: any;
   menutypes: any = {
     post: 'Post', 
     page: 'Page',
@@ -44,7 +46,7 @@ export class MenusComponent implements OnInit {
 
   activeTag = 1;
   new_menu_name: string = '';
-  
+  currentTheme = 'author';
 
 
 
@@ -69,8 +71,9 @@ export class MenusComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     private wpcore: WpcoreService,  
+    private wpdata: WpdataService,  
     private wphelper: WphelperModule) {
-
+    this.currentTheme = wpcore.getTheme();
     this.prepare();
   }
 
@@ -78,11 +81,13 @@ export class MenusComponent implements OnInit {
     this.loadMenuID();
     this.getMenus();
     this.getThemeLocations();
+    this.getLocations();
     this.getPostsMenu('page');
     this.getPostsMenu('post');
     this.changeMenu();
     this.getCategoryMenu();
   }
+
 
   makeCurrentMenu() {
     if(this.current_menu) {
@@ -106,49 +111,45 @@ export class MenusComponent implements OnInit {
     }
   }
 
-  //get current theme location
-  //@todo all
-  getThemeLocations(theme?:string) {
-    var locations = [
-      {
-        name: 'primary',
-        title: 'Primary',
-        menu: '',
-      },
-      {
-        name: 'footer',
-        title: 'Footer',
-        menu: '',
-      },
-      {
-        name: 'user',
-        title: 'User',
-        menu: '',
-      },            
-    ];
-    this.locations = locations;
-    return this.locations;
+  getThemeLocations() {
+    this.locations = this.wpdata.getLocations(this.currentTheme);
   }
 
-  getMenus() {
-    //@todo, make it dynamic
-    this.menus = [
-      {
-        title: "Primary Menu",
-        name: 'primary',
-        items: [],
-      },
-      {
-        title: "Secondary Menu",
-        name: 'secondary',
-        items: [],
-      },
-      {
-        title: "Footer Menu",
-        name: 'footer',
-        items: [],
-      },      
-    ];
+  //get current theme location
+  //@todo all
+  getLocations(theme?:string) {
+    if(!theme) {
+      theme = this.currentTheme;
+    }
+    var locations = this.wpcore.getThemeSettings('menu_locations', theme);
+    console.log(locations);
+    if(locations) {
+      for(let _l in locations) {
+        for(let _loc in this.locations) {
+          if(_l == this.locations[_loc].name) {
+            this.locations[_loc].menu = locations[_l];
+          }
+        }
+      }
+    }
+  }
+
+  getMenus(theme = '') {
+    
+    var _menus = this.wpcore.getThemeSettings('menus');
+    if(_menus) {
+      this.menus = _menus;
+    }
+    else {
+      this.menus = [
+        {
+          title: "Primary Menu",
+          name: 'primary',
+          items: [],
+        },
+      ];
+    }
+
   }
 
   ngOnInit(): void {
@@ -272,7 +273,6 @@ export class MenusComponent implements OnInit {
     }
 
     this.wpcore.setThemeSettings('menu_locations', locations);
-        console.log("menu locations", locations);
 
     this.toastr.success('Saved locations successfully!', "Success");
   }

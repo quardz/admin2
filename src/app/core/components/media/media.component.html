@@ -2,18 +2,28 @@
 
 <div class = "row">
   <div class = "col-sm-12 col-add-meda">
-    <a class = "btn btn-sm btn-outline-primary" ngfSelect multiple="1" [(files)]="files" (fileChange) = "saveFiles('from add new file')">Add New files</a>    
+    <a class = "btn btn-sm btn-outline-primary" ngfSelect multiple="1" [(files)]="uploads" (fileChange) = "saveFiles()">Add New files</a>    
   </div>
 
  
 </div>
 
 
+<div class = "row mb-4">
 
+  <div class = "col-sm-3 col-md-3 media-item mb-4 p-3" *ngFor = "let file of files | keyvalue">
+    <div class = "border-secondary">
+      <img class = "image" [src]='sanitizer.bypassSecurityTrustUrl(file.value.src_url)'  />  
+    </div>
+    
+    <pre class = "small">{{file.value | json}}</pre>
+  </div>
+
+</div>
 
 
 <ngfFormData
-  [files]      = "files"
+  [files]      = "uploads"
   [(FormData)] = "myFormData"
   postName     = "file"
 ></ngfFormData>

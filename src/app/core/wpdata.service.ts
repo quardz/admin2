@@ -323,6 +323,18 @@ export class WpdataService {
     return false;
   }
 
+  getLocations(theme) {
+    var themes = this.getThemes();
+    if(themes) {
+      for(let _t in themes) {
+        if(theme == themes[_t].machine_name && themes[_t].locations) {
+          return themes[_t].locations
+        }
+      }
+    }
+    return false;    
+  }
+
   //@todo automate
   getThemes() {
     var _theme_1 = {
@@ -363,6 +375,17 @@ export class WpdataService {
           weight: 5, 
         },
       },
+      locations: [{
+        name: 'primary',
+        title: 'Primary Menu',
+        menu: '',
+      },
+      {
+        name: 'footer',
+        title: 'Footer Menu',
+        menu: '',
+      },      
+    ],
     };
 
     var _theme_2 = {
@@ -384,7 +407,13 @@ export class WpdataService {
           description: "Appears on left hand side of all pages, occupies 25% of the screen.",
           weight: 2, 
         },      
-      },      
+      },   
+      locations: [{
+        name: 'primary',
+        title: 'Primary Menu',
+        menu: '',
+      },
+      ],         
     };    
 
     let themes = [];

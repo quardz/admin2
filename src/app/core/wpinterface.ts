@@ -1,3 +1,22 @@
+export interface IFile {
+  fid: number,
+  guid: string,
+  user: number, //post_author
+  date: number, //post_date
+  mime: string, //post_mime_type
+  filename: string ,//post_name
+  status: number, //post_status 0: deleted, 1: publised
+  title: string, //post_title
+  storage_type: string, //eg, s3, local, server, blockchain
+  size: number,
+  image?: any,
+  styles?: any, //various styles of images 
+  file_obj?: any, //Store the file
+  src_url?: string, //like blob url or http url, used to display inside admin end. 
+  hash?: string, //hash of dataurl of the file
+}
+
+
 export interface ITheme {
   title: string,
   machine_name: string, //This should be unique machine name
@@ -66,3 +85,4 @@ export interface IMenu {
   description?: string,
   items?: IMenuItem[], 
 }
+

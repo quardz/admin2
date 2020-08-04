@@ -38,7 +38,7 @@
     <h2 class = "title-sub">Theme regions</h2>
     <div class = "row">
         
-      <div class = "col-md-6 col-sm-12 col-region-item p-2" *ngFor = "let _region of regions | keyvalue" >
+      <div class = "col-md-6 col-sm-12 col-region-item p-2" *ngFor = "let _region of regions | keyvalue | orderBy:'_region.value.weight'" >
         <div class = "w-100 border-secondary bg-white">
           <a type="button" class="reghead w-100 pl-4 pt-3 btn btn-secondary pr-4" >
           {{_region.value.title}}

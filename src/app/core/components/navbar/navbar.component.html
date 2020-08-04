@@ -24,15 +24,19 @@
     </ul>
 
     <ul class = "navbar-nav navbar-sites">
-      <li class="nav-item dropdown d-none d-xl-inline-block select-sites">
+      <li class="nav-item dropdown d-none d-xl-inline-block select-sites hidden">
       <select class="form-control form-tn" #cursite id="selectsite" (change)='sitesOnChange(cursite.value)'>
         <option *ngFor="let site of sites" [value]="site.id">{{site.name}}</option>
       </select>
 
       </li>
-      <li>
+      <li class = "hidden">
         <a class = "btn btn-primary btn-tn" (click) = 'host()'>Host to Blockchain</a>  
       </li>
+      <li class = "nav-item">
+        <a class = "btn btn-primary btn-tn" (click) = "saveDB()">Publish Site</a>
+      </li>
+
     </ul>
 
     <ul class="navbar-nav navbar-nav-right">

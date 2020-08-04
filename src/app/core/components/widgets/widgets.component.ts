@@ -7,7 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-//import { NgpSortModule } from "ngp-sort-pipe";
+import { OrderModule } from 'ngx-order-pipe';
+
 
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu, IWidRegMap } from '../../wpinterface';
 import { WpcoreService } from '../../wpcore.service';

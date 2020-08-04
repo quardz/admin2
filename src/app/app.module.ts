@@ -37,6 +37,11 @@ import { SettingsComponent,SettingsGeneralComponent,SettingsDiscussionComponent,
 import { WpeditorComponent } from './core/components/wpeditor/wpeditor.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ngfModule, ngf } from "angular-file";
+
+//import { OrderModule } from 'ngx-order-pipe';
+
+
+
 import { MediaComponent } from './core/components/media/media.component';
 import { MenusComponent } from './core/components/menus/menus.component';
 import { MenuItemComponent } from './core/components/menus/menu-item.component';
@@ -93,6 +98,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     BrowserModule,
     CommonModule,
     BrowserAnimationsModule, // required animations module
+    //OrderModule, 
     ToastrModule.forRoot(), // ToastrModule added 
     EditorModule,
     AppRoutingModule,
@@ -106,6 +112,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     NgbModule,
     ngfModule,
     TreeModule,
+    
     SortablejsModule.forRoot({ animation: 150}),
   ],
   providers: [

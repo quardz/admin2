@@ -5,6 +5,8 @@ import { catchError, retry } from 'rxjs/operators';
 //import {}
 import * as _ from 'underscore'; 
 import * as cloneDeep from 'lodash/cloneDeep';
+import { StorageMap } from '@ngx-pwa/local-storage';
+
 
 import { WphelperModule } from './modules/wphelper.module';
 import { WpdataService } from './wpdata.service';
@@ -26,6 +28,7 @@ export class WpcoreService {
 
   public dbData: any;
   dbStatus: number; 
+  dbDataSrc: string = 'server';
   loaded: boolean = false;
   URLs: Array<any> = []; //link, component, entity = posts/users, type = post/page, parameters as obj
   mapIndex_Pk: Array<any> = []; // It contains the map between primary key and index
@@ -42,7 +45,7 @@ export class WpcoreService {
     'terms': 'term_id',
   };
 
-  currentChanges:any = [];
+  activities:any = [];
 
   public currentTheme = 'author';
 
@@ -52,13 +55,15 @@ export class WpcoreService {
   constructor(private http: HttpClient, 
       private wphelper: WphelperModule,
       private wpdata: WpdataService,
+      private storage: StorageMap, 
       ) {
     this.loadSites();
     this.resolveDataURL();
 
   }
 
-  public addEvent(_type:string, title?:string, msg?:string, data?:any){
+  //Add each activity
+  public addActivity(_type:string, title?:string, msg?:string, data?:any){
     if(_type || title || msg || data) {
       var _event = {
         type: _type,
@@ -66,12 +71,12 @@ export class WpcoreService {
         msg: msg,
         data: data,
       };      
-      this.currentChanges.push(_event);
+      this.activities.push(_event);
     }
   }
-
-  public getEvents() {
-    return this.currentChanges;
+  //Get the activity
+  public getActivities() {
+    return this.activities;
   }
 
   public getSemaphore(entity_type:string = '', get_next:boolean = true){
@@ -133,6 +138,51 @@ export class WpcoreService {
     this.apiURL = '/db.json';
   }
 
+  public dataSrc(){
+    //@todo everything
+    //'business' : our centralised server
+    //'from blockchain' : may be many variations
+    //'broswer': //check the broser first
+    
+    return 'browser';
+    return 'server';
+
+    
+  }
+
+  public getLocalDB() {
+    return new Promise((resolve, reject) => {
+
+      this.storage.get('sitedb').subscribe((db) => {
+        if(db) {
+          //this.dbData = this.fixData(db);
+          console.log("loaded from local", db);
+          this.dbData = db;
+          console.log("after loading and fixing", this.dbData);
+          this.getTaxonomyTree('category');//this is for test @todo remove
+          this.dbStatus = 1;
+          this.loaded = true;
+          resolve(true);
+        }
+        else {
+          reject(false);
+        }
+      });
+    });
+  }
+
+  public saveDBLocally(showNotif = true){
+    var _data = cloneDeep(this.dbData);
+    this.storage.set('sitedb', _data).subscribe({
+      next: () => {
+        console.log("saved the site");
+      },
+      error: (error) => {
+        console.log("error loading the site");
+      },
+    });
+  }
+
   public getSitePublishedStatus() {
     return this.sitePublished;
   }
@@ -157,20 +207,37 @@ export class WpcoreService {
 
 
   load() { 
-    return new Promise((resolve, reject) => {
+    var _datasrc = this.dataSrc();
+    switch(_datasrc){
+      case 'browser': 
+        console.log("data source is ", _datasrc);
+        return this.getLocalDB();
+      break;
 
-      this.http
-        .get(this.apiURL)
-        .subscribe(response => {
-          this.dbData = this.fixData(response);
-          console.log("after loading and fixing", this.dbData);
-          this.getTaxonomyTree('category');//this is for test @todo remove
-          this.dbStatus = 1;
-          this.loaded = true;
-          resolve(true);
-      })
-    })
+      case 'server':
+        return this.loadRemoteDB(this.apiURL);
+      break;
+    }
   } 
+
+  loadRemoteDB(apiURL){
+    return new Promise((resolve, reject) => {
+      this.http.get(apiURL).subscribe(response => {
+        this.dbData = this.fixData(response);
+        console.log("after loading and fixing", this.dbData);
+        this.getTaxonomyTree('category');//this is for test @todo remove
+        this.dbStatus = 1;
+        this.loaded = true;
+        resolve(true);
+      },
+      error => {
+        this.dbStatus = 0;
+        this.loaded = false;   
+        this.dbData = null;     
+        reject(false);
+      });
+    });    
+  }
 
   // Add default tables to json data, Add keys to all the data
   fixData(data){
@@ -547,5 +614,18 @@ export class WpcoreService {
     this.setOption(key, current_data);
   }  
 
+  getThemeSettings(key:string, theme?:string){
+    if(!theme) {
+      theme = this.getTheme();  
+    }    
+    var current_data = this.getOption(key);
+    if(!current_data) {
+      return false;
+    }
+    if(_.has(current_data, theme)) {
+      return current_data[theme];
+    }
+    return false;
+  }
 }
  
