@@ -17,19 +17,41 @@ import { WphelperModule } from '../../modules/wphelper.module';
 export class ThemesListComponent implements OnInit {
 
   themes: ITheme[];
+  cur_theme: any;
+  theme: any; //holds current theme obj
+
 
   constructor(private wpcore: WpcoreService, private toastr: ToastrService,) {  
-    this.themes = wpcore.getThemes();
+    this.prepare()
+    
+    
+    
   }
 
-  activateTheme(theme, theme_title) {
-    if(theme) {
-      this.wpcore.setTheme(theme);
-      this.toastr.success('Success!', "Changed to '" + theme_title + "' theme successfully!");
+  prepare() {
+    this.themes = this.wpcore.getThemes();
+    this.cur_theme = this.wpcore.getTheme();
+    if(this.themes) {
+      for(let _i in this.themes) {
+        if(this.cur_theme == this.themes[_i].machine_name) {
+          this.theme = this.themes[_i];
+          this.cur_theme = this.themes[_i].machine_name;
+          break;
+        }
+      }
+    }    
+    console.log("current theme", this.cur_theme, this.themes, this.theme);
+  }
 
-      console.log();
-    }
-    
+
+
+  activateTheme(cur_theme, theme_title) {
+    if(cur_theme) {
+      this.cur_theme = cur_theme;
+      this.wpcore.setTheme(cur_theme);
+      this.toastr.success('Success!', "Changed to '" + theme_title + "' theme successfully!");
+      this.prepare();
+    } 
   }
 
   ngOnInit(): void {}

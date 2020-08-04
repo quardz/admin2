@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { SortablejsOptions, SortablejsModule } from 'ngx-sortablejs';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-import { OrderModule } from 'ngx-order-pipe';
+
 
 
 import { ITheme, IWidget, IRegion, IMenuItem, IMenu, IWidRegMap } from '../../wpinterface';
@@ -52,7 +52,8 @@ export class WidgetsComponent implements OnInit {
   };
     
 
-  constructor(private wpcore: WpcoreService) { 
+  constructor(private wpcore: WpcoreService,
+    ) { 
     this.getWidgets();
     this.getRegions();
     this.getPositions();
@@ -85,7 +86,34 @@ export class WidgetsComponent implements OnInit {
 
   }
 
+  //Loads default position from database
   getPositions(){
+    var _positions = this.wpcore.getThemeSettings('regwids');
+    if(_positions) {
+      var deltaCollections = [];
+      for(let region_mn in _positions) {
+        this.regwids[region_mn] = []; 
+        if(_positions[region_mn]) {
+          for(let _index in _positions[region_mn]) {
+            var _regwid = _positions[region_mn][_index];
+            var _widget = this.getWidget(_regwid._w);
+            var form = new FormGroup({});
+            var fields: FormlyFieldConfig[] = [];
+            fields = cloneDeep(_widget.inputs); 
+            deltaCollections.push(_regwid._d);    
+
+
+            _widget.fields = fields;     
+            _widget.form = form; 
+            _widget.model = _regwid._m;
+            _widget.delta = _regwid._d;
+            _widget.isWidCollapsed = true;
+            this.regwids[region_mn].push(_widget);  
+          }
+        }
+      }
+    }
+    console.log("cuurrent positions", _positions, this.regwids);
 
   }
   widgetToggle(widget) {

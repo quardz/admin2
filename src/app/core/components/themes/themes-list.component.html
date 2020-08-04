@@ -1,12 +1,14 @@
 <h1 class = "page-title">Themes</h1>
 
 <div class = "row">
-  <div class = "col-sm-6 col-md-4 mb-3" *ngFor = "let theme of themes">
-    <div class = "titem xp-1 border p-1">
 
+
+  <div class = "col-sm-6 col-md-4 mb-3" >
+
+    <div class = "titem xp-1 border p-1" >
       <div class="card w-100">
         <div class = "screenshot">
-          <img class="card-img-top" src="{{theme.thumbnail}}" alt="Card image cap">
+          <img class="card-img-top" src="{{theme.thumbnail}}" alt="{{theme.title}}">
           <a class = "tdetails"  routerLink="/admin/themes/detail/{{theme.machine_name}}">Theme Details</a>
         </div>
         <div class="card-body">
@@ -14,7 +16,33 @@
             <div class = "titemname">{{theme.title}}</div> 
             <div class = "titem-ab">
             <ul class="list-inline ">
-              <li class="list-inline-item"><a class = "btn btn-outline-primary btn-tn" (click) = "activateTheme(theme.machine_name, theme.title)">Activate</a></li>
+              <li class="list-inline-item"><a class = "btn btn-outline-primary btn-tn">Active Theme</a></li>
+            </ul>
+            </div>
+          </div>
+        </div>
+      </div>      
+
+    </div>
+
+  </div>
+
+
+  
+  <div class = "col-sm-6 col-md-4 mb-3" *ngFor = "let theme_ of themes" [ngClass] = "{'hidden': theme_.machine_name == cur_theme}">
+
+    <div class = "titem xp-1 border p-1" >
+      <div class="card w-100">
+        <div class = "screenshot">
+          <img class="card-img-top" src="{{theme_.thumbnail}}" alt="Card image cap">
+          <a class = "tdetails"  routerLink="/admin/themes/detail/{{theme_.machine_name}}">Theme Details</a>
+        </div>
+        <div class="card-body">
+          <div class="card-text titem-info">
+            <div class = "titemname">{{theme_.title}}</div> 
+            <div class = "titem-ab">
+            <ul class="list-inline ">
+              <li class="list-inline-item"><a class = "btn btn-outline-primary btn-tn" (click) = "activateTheme(theme_.machine_name, theme_.title)">Activate</a></li>
               <li class="list-inline-item"><a class = "btn btn-outline-primary btn-tn">Live Preview</a></li>
             </ul>
             </div>
@@ -23,5 +51,11 @@
       </div>      
 
     </div>
+
   </div>
+  
 </div>
+
+
+
+

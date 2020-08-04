@@ -143,14 +143,14 @@ export class WpcoreService {
     //'business' : our centralised server
     //'from blockchain' : may be many variations
     //'broswer': //check the broser first
-    
     return 'browser';
     return 'server';
+    
 
     
   }
 
-  public getLocalDB() {
+  public getLocalDB(tryRemoteAPI = true) {
     return new Promise((resolve, reject) => {
 
       this.storage.get('sitedb').subscribe((db) => {
@@ -165,7 +165,20 @@ export class WpcoreService {
           resolve(true);
         }
         else {
-          reject(false);
+          console.log("trying remote db");
+          return this.loadRemoteDB(this.apiURL).then((status)=>{
+            if(status) {
+              console.log("loaded remote dat", status);
+              
+              resolve(true);
+            }
+            else {
+              reject("error loading remote data");
+            }
+
+
+          });
+
         }
       });
     });
