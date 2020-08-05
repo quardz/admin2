@@ -24,7 +24,7 @@ export class ThemesListComponent implements OnInit {
   constructor(private wpcore: WpcoreService, private toastr: ToastrService,) {  
     this.prepare()
     
-    
+     
     
   }
 

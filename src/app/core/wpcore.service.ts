@@ -38,11 +38,13 @@ export class WpcoreService {
   sitePublishedTime: number = 0;
   public sites: ISites[];
   semaphore: any = {};
-  coreEntityTables = ['users', 'posts', 'terms'];
+  coreEntityTables = ['users', 'posts', 'terms', 'files'];
   tablePKs = {
     'users': 'ID',
     'posts': 'ID',
     'terms': 'term_id',
+    'files': 'fid',
+
   };
 
   activities:any = [];
@@ -444,6 +446,9 @@ export class WpcoreService {
     } // END of for loop on each tables 
 
 
+    if(!_.has(data,'files')) {
+      data.files = {};
+    }
 
 
     //End : content per terms
@@ -587,6 +592,25 @@ export class WpcoreService {
     return false;
   }
 
+  //Files 
+  getFiles(){
+    if(_.has(this.dbData, 'files')) {
+      return cloneDeep(this.dbData.files);  
+    }
+    this.dbData.files = {};
+    return {};
+  }
+ 
+  setFile(){
+
+  }
+
+  public setFiles(files) {
+    this.wphelper.saveUnionObjects(files, this.dbData.files);
+    return this.dbData.files;
+  }
+
+
 
   // Themes / regions / widgets
   setTheme(theme) {
@@ -596,7 +620,7 @@ export class WpcoreService {
     }
   }
 
-  getTheme() {
+  getTheme() { 
     return this.getOption("currentTheme", this.currentTheme); 
   }
 
@@ -626,6 +650,8 @@ export class WpcoreService {
     current_data[theme] = data;
     this.setOption(key, current_data);
   }  
+
+  
 
   getThemeSettings(key:string, theme?:string){
     if(!theme) {

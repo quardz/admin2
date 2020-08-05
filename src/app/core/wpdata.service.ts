@@ -9,7 +9,7 @@ export class WpdataService {
   constructor() { }
 
   getWidgets() {
-    let widgets = {
+    let widgets = { 
 
       //Search Widgets
       search: {

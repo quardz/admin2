@@ -244,6 +244,17 @@ export class WphelperModule {
     }
   }
 
+  //Merge the first obj into second object
+  public saveUnionObjects(src, dst) {
+    console.log("saveUnionObjects", src, dst);
+    if(src) {
+      for(let _skey in src) {
+        dst[_skey] = src[_skey];
+      }
+    }
+    return dst;
+  }
+
   //Create slug from string
   public slugify(str, replacer = "-") {
     str = str.replace(/^\s+|\s+$/g, ''); // trim

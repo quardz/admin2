@@ -9,14 +9,13 @@
 </div>
 
 
-<div class = "row mb-4">
+<div class = "row mb-4 mt-4">
 
-  <div class = "col-sm-3 col-md-3 media-item mb-4 p-3" *ngFor = "let file of files | keyvalue">
-    <div class = "border-secondary">
+  <div class = "col-sm-3 col-md-2 media-item mb-4 pr-5" *ngFor = "let file of files | keyvalue">
+    <div class = "border border-primary media-item-inner" (click)="openFile(filemodal, file.key)">
       <img class = "image" [src]='sanitizer.bypassSecurityTrustUrl(file.value.src_url)'  />  
     </div>
     
-    <pre class = "small">{{file.value | json}}</pre>
   </div>
 
 </div>
@@ -35,3 +34,47 @@
 <div *ngIf="uploadPercent">
   Upload Progress: {{ uploadPercent }}%
 </div>
+
+
+
+<ng-template #filemodal let-c="close" let-d="dismiss" >
+  <div class="modal-header me-header pt-1 pb-1">
+    <h4 class="modal-title" id="modal-basic-title">Attachment Detail</h4>  
+    <div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" class="btn btn-outline-primary" (click) = "fileEditMove('prev')"><i class = "mdi-chevron-left mdi"></i></button>
+    <button type="button" class="btn btn-outline-primary" (click) = "fileEditMove('next')"><i class = "mdi-chevron-right mdi"></i></button>
+
+    <button type="button" class="btn btn-outline-primary" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>          
+    </div>
+
+  </div>
+  <div class="modal-body me-body pt-0 mt-0">
+
+    <div class = "row ">
+      <div class = "col-sm-8 me-img text-center">
+        <div class = "w-100 me-img-inner "><img [src]='sanitizer.bypassSecurityTrustUrl(fileEdit.src_url)'/></div>
+      </div>
+      <div class = "col-sm-4 me-form">
+        <div class = "w-100">
+          <ul class = "list-group small">
+            <li class="list-group-item p-2"><strong>File name:</strong> {{fileEdit.filename}}</li>
+            <li class="list-group-item p-2"><strong>File type:</strong> {{fileEdit.mime}}</li>
+            <li class="list-group-item p-2"><strong>Uploaded on:</strong> {{fileEdit.date}}</li>
+            <li class="list-group-item p-2"><strong>File Size:</strong> {{fileEdit.size}} Bytes</li>
+            <li class="list-group-item p-2"><strong>Dimensions:</strong> 101 X 102 in Pixels</li>
+          </ul>
+          
+      <form [formGroup]="editForm" (ngSubmit)="saveEditedImage()">
+      <formly-form [form]="editForm" [fields]="editFields" [model]="editModal"></formly-form>
+      <button type="submit" class="btn btn-outline-primary btn-md" [disabled]="!editForm.valid">Save</button>
+    </form>
+        </div>
+
+      </div>
+    </div>
+    
+  </div>
+  
+</ng-template>

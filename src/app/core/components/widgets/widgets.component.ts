@@ -111,7 +111,7 @@ export class WidgetsComponent implements OnInit {
             this.regwids[region_mn].push(_widget);  
           }
         }
-      }
+      } 
     }
     console.log("cuurrent positions", _positions, this.regwids);
 

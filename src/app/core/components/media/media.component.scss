@@ -1,6 +1,31 @@
 .media-item {
   overflow: hidden;
+  max-height: 180px;
+  height: 180px;
   img {
     max-width: 100%;
+  }
+  .media-item-inner {
+    height: 180px;
+  }
+  &:hover {
+    border-width: 3px;
+    border-radius: 3px;
+  }
+}
+
+.me-body {
+
+  .me-img {
+    .me-img-inner {
+      overflow-x: hidden;
+      img {
+        max-width: 100%;
+      }    
+    }
+    
+  }
+  .me-form{
+
   }
 }
