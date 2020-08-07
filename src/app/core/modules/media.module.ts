@@ -56,68 +56,7 @@ export class MediaModule {
     return 4;
   }
 
-  
-
-  _saveFiles(uploads) {
-    return new Promise((resolve, reject) => {
-      var _error_counts = 0;
-      var _this = this;
-      var files = {};
-      if(uploads) {
-        for(let _i in uploads) {
-          if(uploads[_i] && uploads[_i].size) {
-            var result = this.saveFileBlobinDB(uploads[_i])
-              .then(function(_res:any){
-                console.log("file reached then in save file :: " + uploads[_i].name, _res);
-                if(_res && uploads[_i]) {
-                  var _file = {
-                    fid: _this.getNextFileID(),
-                    guid: '', //@todo
-                    user: 1,
-                    date: uploads[_i].lastModified,
-                    mime: uploads[_i].type,
-                    filename: uploads[_i].name,
-                    status: '',//@todo
-                    title: '',//@todo
-                    storage_type: 'browser',
-                    size: uploads[_i].size,
-                    file_obj: cloneDeep(uploads[_i]),
-                    src_url: _res.uri,
-                    hash: _res.hash,
-                  };
-                  if(!_.has(files, _res.hash)) {
-                    console.log("pushing the file :: " + uploads[_i].name, _file);
-                    files[_i] = _file;
-                    var __i = parseInt(_i);
-                    //uploads.splice(__i, 1);
-                  }
-                }
-                else {
-                }
-                //create file object to bloburl 
-              
-              }) 
-              .catch(function(error){
-                console.log("file save error", error, uploads);
-                
-              });
-            
-          }
-          else {
-            console.log("ma be file error for : ", uploads[_i].name, uploads[_i].name);
-
-          }
-
-        }// for ends
-        resolve(files);
-      } else {
-        reject(false);
-      }
-
-    });
-  }
-
-  _saveFiles_v2(uploads){
+  _saveFiles(uploads){
 
     var _this = this;
 
@@ -140,6 +79,13 @@ export class MediaModule {
                 file_obj: cloneDeep(uploads[_i]),
                 src_url: _res.uri,
                 hash: _res.hash,
+                temp:{},
+                meta: {
+                  alt:'',
+                  title:'',
+                  caption:'',
+                  declaration:'',
+                },
               };
               
               observer.next(_file);
@@ -154,8 +100,65 @@ export class MediaModule {
   }  
 
 
+
+  public reloadLocalDBFileBlobURL(hashes, bloburl = true, prefix = "thumb_") {
+    const fileObservable = new Observable(observer => {
+      if(hashes) {
+        for(let _h in hashes) {
+          var _storage_key = prefix + hashes[_h];
+          this.storage.get(_storage_key).subscribe((dataURI)=>{
+            var _ret:any;
+            if(!bloburl) {
+              _ret = {
+                hash: hashes[_h],
+                blob_url: dataURI,
+              };              
+              observer.next(_ret);
+            }
+            else {
+              var _blob_uri = this.dataURItoBlobURI(dataURI);
+              _ret = {
+                hash: hashes[_h],
+                blob_url: _blob_uri,
+              };
+            
+              observer.next(_ret);
+            }
+          })    
+        }
+      }
+    });
+    return fileObservable;
+  }
+
+  public generateThumbsLocal(hashes, prefix = 'thumb_'){
+    const fileObservable = new Observable(observer => {
+      if(hashes) {
+        for(let _h in hashes) {
+          this.storage.get(hashes[_h]).subscribe((dataURI)=>{   
+            this.thumbnailify(dataURI, 140, function(thumbdataURI){
+              var _thumb_hash = prefix + hashes[_h];
+              this.storage.set(_thumb_hash, thumbdataURI).subscribe({
+                next: () => {
+                  var _ret = {
+                    hash: hashes[_h],
+                    blob_url: thumbdataURI,
+                  };
+                  observer.next(_ret);    
+                },
+                error: (error) => {},
+              });                
+            });
+          });
+        }
+      }
+    });
+    return fileObservable;           
+  }
+
+
   //Get file obj, store in local storage, create file item in DB, return file ID
-  saveFileBlobinDB(file) {
+  saveFileBlobinDB(file, thumb = "thumb_") {
     var _this = this;
     var fid = 45; //@todo
 
@@ -168,16 +171,8 @@ export class MediaModule {
       reader.onload = function(event) {
         (<FileReader>event.target).result;
         var md5 = Md5.init(reader.result);
-        /*
-        _this.storage.set(md5, reader.result).subscribe((data)=>{
-          var _uri = _this.dataURItoBlobURI(reader.result);
-          var _res = {
-            hash: md5,
-            uri: _uri,
-          }  
-          resolve(_res);          
-        });
-        */
+
+          //store main image          
           _this.storage.set(md5, reader.result).subscribe({
               next: () => { 
                 var _res = {
@@ -193,7 +188,15 @@ export class MediaModule {
                 };
                 reject(error);
               },
+          });
+
+          //create Thumb image
+          if(thumb) {
+            _this.thumbnailify(reader.result, 140,  function(thumbdatasrc) {
+              var _thumb_hash = thumb + md5;
+              _this.storage.set(_thumb_hash, thumbdatasrc).subscribe(() => {});
             });
+          }
          
         
       };
@@ -230,6 +233,39 @@ export class MediaModule {
     }
     return false;
   }
+
+  //Credits  :https://jsfiddle.net/wunderbart/hnj5vrf0/
+  public thumbnailify(base64Image, targetSize, callback) {
+    if(!targetSize) {
+      targetSize = 140;
+    }
+
+    var img = new Image();
+    img.onload = function() {
+      var width = img.width;
+      var height = img.height;
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext("2d");
+
+      canvas.width = canvas.height = targetSize;
+
+      ctx.drawImage(
+        img,
+        width > height ? (width - height) / 2 : 0,
+        height > width ? (height - width) / 2 : 0,
+        width > height ? height : width,
+        width > height ? height : width,
+        0, 0,
+        targetSize, targetSize
+      );
+
+      callback(canvas.toDataURL());
+    };
+    img.src = base64Image;
+  };
+
+
+
 
   dataURItoBlob(dataURI) {
     if(!dataURI) {

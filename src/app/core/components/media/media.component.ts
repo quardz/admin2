@@ -52,13 +52,19 @@ export class MediaComponent implements OnInit {
   uploads: File[];
   files: any = {};
   uploadPercent: any;
-  fileEdit: any;
+  
   filekeys = [];
   test:any;
 
+  fileEdit: any;
+  fileEditHash: string = '';
   editForm:any;
   editFields: any;
   editModal: any;
+
+  thumbs:any = {};
+  imageOrig: any = {};
+  hashes: any = [];
 
   constructor(private storage: StorageMap, 
     config: NgbModalConfig, 
@@ -67,26 +73,14 @@ export class MediaComponent implements OnInit {
     public wpcore: WpcoreService,
     private media: MediaModule) { 
 
-    this.renderFiles();
+    
     this.getFiles();
 
     // customize default values of modals used by this component tree
 
   }
 
-  renderFiles() {
-    /*this.storage.keys().subscribe({
-      next: (key) => {
-        console.log("renderfiles", key, this.filekeys);
-        this.filekeys.push(key);
-        this.storage.get(key).subscribe((data) => {
-          console.log("get data for ", key);
-        })
-      }
-    });
-    */
-  }
-
+  //Open a file in modal for editing
   openFile(modal, file_hash){
     this.editForm = new FormGroup({});
     var editFields: FormlyFieldConfig[] =  [
@@ -143,145 +137,90 @@ export class MediaComponent implements OnInit {
       scrollable: true,
     };
 
+    if(this.files[file_hash].storage_type == 'browser' && !_.has(this.imageOrig, file_hash)) {
+      this.media.reloadLocalDBFileBlobURL([file_hash], true, '').subscribe((dataurl:any)=>{    
+        this.imageOrig[file_hash] = dataurl.blob_url;
+      });
+    }
     
     this.fileEdit = cloneDeep(this.files[file_hash]);
+    if(file_hash) {
+      this.fileEditHash = file_hash;
+    }
     this.editModal = cloneDeep(_model);
     this.modalService.open(modal, modalSettings);
 
   }
 
+  //In edit screen, the left/right buttons will be handled by this
   fileEditMove(dir) {
+    var _cur_pos = _.indexOf(this.hashes, this.fileEditHash);
+    var new_pos = _cur_pos;
+
+    switch(dir){
+      case 'next':
+        new_pos++;
+      break;
+      case 'prev':
+        new_pos--;
+      break;
+    }
+    
+    
+
     console.log("file edit move", dir);
   }
 
+  //Save the edited images
   saveEditedImage(){
-    console.log("content edited", this.editModal); 
+    this.files[this.fileEditHash].meta = cloneDeep(this.editModal);
+    this.setFiles();
   }
 
+  //Get files from only DB
+  //@todo, load the local cache
   getFiles() {
+    var _files = this.wpcore.getFiles();
+    var _hashes = [];
+    for(let _f in _files) {
+      if(_files[_f].storage_type == 'browser') {
 
-    //Get files from db. 
-
-    console.log("all files ", this.files);
-    /*
-    console.log("into get files");
-    var files:any = [];
-    this.storage.keys().subscribe({
-      next: (key) => {
-        this.storage.get(key).subscribe({
-          next: (_file_data) => { 
-              if(_file_data) {
-              var _blob_url = this.media.dataURItoBlobURI(_file_data);
-              console.log("getting files", key, _blob_url);    
-            }
-          },
-
-          error: (error) => { 
-            console.log("loading error", key, error);
-          },
-        });
-      
+        _hashes.push(_f);  
       }
-    });
-    */
+    }
+    if(_hashes) {
+      this.media.reloadLocalDBFileBlobURL(_hashes, false, 'thumb_').subscribe((thumb:any)=>{
+        this.thumbs[thumb.hash] = thumb.blob_url;
+      });
+      this.files = cloneDeep(_files);
+    }
+
+    this.hashes = _.keys(this.files);
+    
   }
+
+
 
   getNextFileId() {
     return 4; //@todo full
   }
 
   saveFiles() {
-    this.media._saveFiles_v2(this.uploads).subscribe((file:any)=>{
+    this.media._saveFiles(this.uploads).subscribe((file:any)=>{
       var _hash = file.hash;
       if(_hash) {
         this.files[_hash] = file;
       }
       this.wpcore.setFiles(this.files);
-      console.log("file obj created", file);
-    });
-    
-    /*
-    this._saveFiles().then((res)=>{
-      
-      
-      console.log("saved files", res, this.files, this.wpcore.dbData.files);
-    });
-    */
-  }
-  /*
-    this._saveFiles(cloneDeep(this.uploads)).then((_files:any)=>{
-      console.log("files from promize", _files, _.size(_files));
-      //this.files = cloneDeep(_files);
-      if(_files) {
-        var _somehing = cloneDeep(_files);
-        //this.files 
-        console.log("files from promize promize", _files, this.files, _somehing, _.size(_files));
-        /*
-        
-        for(let _hash in _files) {
-          console.log("files inside promize loop");
-          this.files[_hash] = cloneDeep(_files[_hash]);
-          console.log("uploaded files", _files, _hash, _files[_hash]);  
-        }
-       
-      }
-      else {
-        console.log("error uploaded files", _files); 
-      }
-    });
-  }
-  */
-  _saveFiles(){
-    return new Promise((resolve, reject) => {
-      var _error_counts = 0;
-      var _this = this;
-      var files = {};
 
-      if(this.uploads) {
-        for(let _i in this.uploads) {
-          if(this.uploads[_i] && this.uploads[_i].size) {
-            var result = this.media.saveFileBlobinDB(this.uploads[_i]).then(function(_res:any){
-              if(_res && _this.uploads[_i]) {
-                var _file = {
-                  fid: _this.media.getNextFileID(),
-                  guid: '', //@todo
-                  user: 1,
-                  date: _this.uploads[_i].lastModified,
-                  mime: _this.uploads[_i].type,
-                  filename: _this.uploads[_i].name,
-                  status: '',//@todo
-                  title: '',//@todo
-                  storage_type: 'browser',
-                  size: _this.uploads[_i].size,
-                  file_obj: cloneDeep(_this.uploads[_i]),
-                  src_url: _res.uri,
-                  hash: _res.hash,
-                  meta: {
-                    alt:'',
-                    title: '',
-                    caption: '',
-                    description: '',
-                  }
-                };
-                if(!_.has(_this.files, _res.hash)) {
-                  _this.files[_res.hash] = _file;
-                  var __i = parseInt(_i);
-                  _this.uploads.splice(__i, 1);
-                }
-              }
-              else {
-              }
-            }).catch(function(error){
-              console.log("file save error", error, _this.uploads[_i]);
-            });
-          }
-        }// END OF FOR 
-        resolve(true);
-      }            
-    });
+    });  
   }
 
+  setFiles() {
+    this.wpcore.setFiles(this.files);
+    this.hashes = _.keys(this.files);
 
+  }
 
   ngOnInit(): void {
   }

@@ -13,7 +13,8 @@
 
   <div class = "col-sm-3 col-md-2 media-item mb-4 pr-5" *ngFor = "let file of files | keyvalue">
     <div class = "border border-primary media-item-inner" (click)="openFile(filemodal, file.key)">
-      <img class = "image" [src]='sanitizer.bypassSecurityTrustUrl(file.value.src_url)'  />  
+      <img class = "image" *ngIf = "file.value.storage_type == 'browser'" [src]='sanitizer.bypassSecurityTrustUrl(thumbs[file.key])'  />  
+      <img class = "image" *ngIf = "file.value.storage_type != 'browser'" [src]='sanitizer.bypassSecurityTrustUrl(file.value.src_url)'  />  
     </div>
     
   </div>
@@ -54,7 +55,7 @@
 
     <div class = "row ">
       <div class = "col-sm-8 me-img text-center">
-        <div class = "w-100 me-img-inner "><img [src]='sanitizer.bypassSecurityTrustUrl(fileEdit.src_url)'/></div>
+        <div class = "w-100 me-img-inner "><img [src]='sanitizer.bypassSecurityTrustUrl(imageOrig[fileEdit.hash])'/></div>
       </div>
       <div class = "col-sm-4 me-form">
         <div class = "w-100">
