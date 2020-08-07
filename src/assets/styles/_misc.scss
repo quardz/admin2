@@ -233,5 +233,16 @@ pre {
  
 .href {
   color: #308ee0;
+  cursor: pointer;
+}
+
+.hoveropen {
+  display: none;
+}
+
+.hoverwrap:hover {
+  .hoveropen {
+    display: block;
+  }
 }
 

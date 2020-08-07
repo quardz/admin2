@@ -1,14 +1,17 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import Tabulator from 'tabulator-tables';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+
+
 import { FormGroup, ReactiveFormsModule,FormControl, ValidationErrors,FormBuilder } from '@angular/forms';
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
-import { ActivatedRoute, Router, Routes } from '@angular/router';
 
+import { NgxDatatableModule,DatatableComponent } from '@swimlane/ngx-datatable';
 import * as _ from 'underscore';
 import { ToastrService } from 'ngx-toastr';
+import * as cloneDeep from 'lodash/cloneDeep';
 
 import { WpcoreService } from '../../wpcore.service';
 import { WphelperModule } from '../../modules/wphelper.module';
+import { TaxonomyModule } from '../../modules/taxonomy.module';
 
 
 
@@ -16,26 +19,38 @@ import { WphelperModule } from '../../modules/wphelper.module';
   selector: 'taxonomy-form',
   templateUrl: './taxonomy-form.component.html',
   styleUrls: ['./taxonomy-form.component.scss']
-})
-export class TaxonomyFormComponent implements OnInit {
+}) 
+export class TaxonomyFormComponent {
   
-  @Input() taxonomy_machine_name: string = 'category';
+  @Input() taxonomy_machine_name: any;
   @Input() taxonomy_name: string = 'Category';
-  @Input() display_parent: boolean = false;
 
 
-  title = 'DemoTabulator';
+  //Data
   terms: any[];
-  columnNames: any[] = [];
-  termTable: Tabulator;
+  tax_tree: any;
+  
+  
+  //Table 
+  rows:any;
+  tempRows = [];
+
+  columns = [
+    { prop: 'name', name: 'Name' }, 
+    { prop: 'description', name: 'discp' }, 
+    { prop: 'slug', name: "Slug" },
+    { prop: 'count', name: "Count" }
+  ];
+  @ViewChild(DatatableComponent) table: DatatableComponent;
+
+  selectedRows = [];
   find: string;
   bulkOps = {
     'select': 'Bulk Actions',
     'delete': 'Delete',
   };
 
-
-  tax_tree: any;
+  // Forms
   form = new FormGroup({});
   model = { 
     name: "",
@@ -44,62 +59,85 @@ export class TaxonomyFormComponent implements OnInit {
     description: "",
     taxonomy: "",
   };
-
-
-
   fields: FormlyFieldConfig[] = [];
-
-  bulkActionsForm = this.fb.group({
-    bulkaction: ['']
-  });
-
-  termSearchForm = this.fb.group({
-    searchterm: ['']
-  });  
 
 
   constructor (private wpcore: WpcoreService,  
     private wphelper: WphelperModule, 
+    public taxo: TaxonomyModule,
     private toastr: ToastrService,
-    public fb: FormBuilder) {
-      //this.initiate();
+    //public fb: FormBuilder
+      ) {
+
   }
 
+  //Define forms for search and action forms
+  /*
+  termSearchForm = this.fb.group({
+    searchterm: ['']
+  });
+  
+  bulkActionsForm = this.fb.group({
+    bulkaction: ['']
+  });
+  */
+
+
+  //After Selecting rows
+  onSelect({ selected }) {
+    console.log('Select Event', selected, this.selectedRows);
+
+    this.selectedRows.splice(0, this.selectedRows.length);
+    this.selectedRows.push(...selected);
+  }
+
+
+  ngxDataTableTerms() {
+    //this.getData();
+    this.rows = cloneDeep(this.terms);
+    this.rows = [...this.rows];
+  }
+
+  updateFilter(event) {
+    const val = event.target.value.toLowerCase();
+    // filter our data
+    const temp = this.tempRows.filter(function (d) {
+      if(d && _.has(d, 'name') && d.name) {
+        var _name = d.name.toString() + '';
+        return _name.toLowerCase().indexOf(val) !== -1 || !val;  
+      }
+    });
+
+    // update the rows
+    this.rows = temp;
+    // Whenever the filter changes, always go back to the first page
+    this.table.offset = 0;
+  }
+
+
   initiate() {
-    console.log("initiate started");
     
-    this.tax_tree = this.wpcore.getTaxonomyTree(this.taxonomy_machine_name);
-
-    switch(this.taxonomy_machine_name) {
-      case 'category':
-        this.display_parent = true;
-      break;
-
-      case 'post_tag': 
-        this.display_parent = false;
-      break;
-
-      default:
-    }
+    this.tax_tree = this.taxo.getTaxonomyTree(this.taxonomy_machine_name);
+    
 
     var selector = this.wphelper.treeSort(this.tax_tree);
     this.defineFields(selector);
     this.getData();    
-    this.buildTable();
-  }
-
-  updateData() {
-
+    this.ngxDataTableTerms();
   }
 
 
   getData() {
-    var data = this.wpcore.getData(); 
-    this.terms = data.terms;    
+    this.taxo.getTerms();
+    this.terms = this.taxo.getTermsByTaxonomy(this.taxonomy_machine_name);
+    this.tempRows = [...this.terms];
   }
 
 
+
+  //forms 
   defineFields(_parents?:any) {
+
     this.fields = [
       {
         key: 'name',
@@ -116,8 +154,6 @@ export class TaxonomyFormComponent implements OnInit {
       {
         key: 'slug',
         type: 'input',
-        //wrappers: ['form-field-horizontal'],
-
         templateOptions: {
           label: 'Slug',
           type: 'text',
@@ -129,9 +165,8 @@ export class TaxonomyFormComponent implements OnInit {
       {
         key: 'parent',
         type: 'select',
-        className: this.display_parent ? 'display' : 'hidden', 
+        className: (this.taxonomy_machine_name == 'category') ? 'display' : 'hidden', 
         defaultValue: 0,
-        //wrappers: ['form-field-horizontal'],
         templateOptions: {
           label: 'Parent Category',
           required: false,
@@ -143,7 +178,6 @@ export class TaxonomyFormComponent implements OnInit {
       {
         key: 'description',
         type: 'textarea',
-        //wrappers: ['form-field-horizontal'],
         templateOptions: {
           label: 'Description',
           type: 'textarea',
@@ -156,115 +190,36 @@ export class TaxonomyFormComponent implements OnInit {
     ];
   }
 
-
-
   onSubmit() {
-    
-    if(this.model && _.has(this.model,'name')) {
-      var name = this.wphelper.stripTags(this.model.name);
-      if(name) {
-        var slug = this.wphelper.slugify(name);
-        var term = {
-          name: name,
-          slug: slug,
-          parent: this.model.parent,
-          taxonomy: this.taxonomy_machine_name,
-          description: this.wphelper.stripTags(this.model.description),
-        };
-
-        if(this.wphelper.isDuplicateTerm(term, this.wpcore.dbData.terms)) {
-          this.toastr.error('Error!', "A term with the name provided already exists with this parent.");
-        }
-        else {
-          var msg = this.wpcore.saveEntity(term, 'terms');
-          this.refreshTable();
-          this.toastr.success('Success!', "Created new Item");
-          this.model = {
-            name: " ",
-            slug: "",
-            parent:0,
-            description: "",
-            taxonomy: "",            
-          };
-        }
-      }
+    var res = this.taxo.addTerm(this.model.name, this.taxonomy_machine_name, this.model.slug, this.model.description, this.model.parent);
+    if(res.status) {
+      this.toastr.success(res.message);
+      this.model = {
+        name: " ",
+        slug: "",
+        parent:0,
+        description: "",
+        taxonomy: "",            
+      };      
+    }
+    else {
+      this.toastr.error(res.message);
+      console.log("error creating term", res.data);
     }
   }
 
-  
-
-  buildTable(): void {
-    console.log("buildTable started");
-
-    this.columnNames = [
-
-      { title: "Select", width: 75, formatter:"rowSelection", titleFormatter:"rowSelection", align:"center", headerSort:false},
-      { title: "Id", field: "term_id",visible:false },
-      { title: "Name", field: "name" },
-      { title: "Description", field: "description"},//,editor:"textarea" },
-      { title: "Slug", field: "slug",editor:"input" },
-      { title: "Count", field: "count",formatter:"link", formatterParams:{
-        labelField:"Count",
-        urlPrefix:"https://posts.com/postsbytax/",
-        } 
-      },
-    ];
-    
-    var tab_settings = {
-        layout: 'fitColumns',
-        //selectable:true,
-        dataTree:true,
-        movableRows: true, //enable user movable rows
-        columns:[
-          {
-            formatter:"rowSelection", 
-            titleFormatter:"rowSelection", 
-            align:"center", 
-            headerSort:false
-          },
-          {
-            rowHandle:true, 
-            formatter:"handle",  
-            headerSort:false, 
-            frozen:true, 
-            width:30, 
-            minWidth:30},
-        ]
-    };    
-
-    //this.terms = ;
-
-    var tab_selector = "#tabulator-div-" + this.taxonomy_machine_name;
-    
-    this.termTable = new Tabulator(tab_selector, tab_settings); 
-
-    this.termTable.setColumns(this.columnNames);
-    this.termTable.clearData();
-    this.termTable.setData(this.terms);
-    this.termTable.setFilter(this.customFilter, {taxonomy: this.taxonomy_machine_name});
-    console.log("in build,", this.taxonomy_machine_name, this.terms);
-  }  
-
-  ngOnInit() {
-    this.initiate();
-    //this.buildTable();
-    console.log("oniniti started");
-  }
-
-
-
-  onSubmitbulkActionsForm() {
+  onSubmitbulkActionsForm() {/*
     var _counts = {
       total:0,
       deleted:0,
     };
     if(this.bulkActionsForm.get('bulkaction').value == 'delete') {  
-      var rows = this.termTable.getRows("active");
+      var rows = [];
       if(rows) {
         if(confirm("Are you sure to delete selected terms")) {
           for(let _index in rows) {
             var row = rows[_index];
-            if(row.isSelected()) {
+            if(row) {
               var row_data = row.getData();
               if(row_data.term_id != 1) {
                 _counts.total++;
@@ -274,49 +229,35 @@ export class TaxonomyFormComponent implements OnInit {
               }
             }
           }
-          this.refreshTable();
           this.toastr.success('Deleted!', "Deleted " + _counts.deleted + " of total " + _counts.total + ".");
         }
       }
-      
       else {
         this.toastr.error("Error", "Nothing to delete, select atleast 1 item.");
       }
+    }     */
+  }
 
-
-    } 
-    
+  termEdit() {
 
   }
 
-  onSubmitTermSearchForm() {
-    var _keyword = this.termSearchForm.get('searchterm').value; 
-    if(_keyword) {
-      this.termTable.clearFilter();
-      this.termTable.setFilter(this.customFilter, {taxonomy: this.taxonomy_machine_name});
-      var _filter = {
-        field: "name",
-        type: "like",
-        value: _keyword,
-      };
-      this.termTable.setFilter([_filter]);
-    }
-    else {
-      this.termTable.clearFilter();
-      this.termTable.setFilter(this.customFilter, {taxonomy: this.taxonomy_machine_name});
-    }
- 
+  termQuickEdit() {
+
+  }
+  
+  termDelete() {
+
   }
 
-  refreshTable() {    
-    this.getData();
-    this.termTable.replaceData(this.terms); 
-    console.log("refreshTable started");
+  ngOnInit() {
+    this.initiate();
   }
 
-  customFilter(data, filterParams){
-      return data.taxonomy == filterParams.taxonomy; //must return a boolean, true if it passes the filter.
-  }
+
+
+
+  displayCheck(){return true;}
 
 }
 
@@ -341,49 +282,9 @@ export class TaxonomyEditFormComponent implements OnInit {
   templateUrl: './taxonomy.component.html', 
   styleUrls: ['./taxonomy.component.scss']
 })
-export class TaxonomyComponent implements OnInit, OnDestroy {
-
-  /*
-
-  @Input() taxonomy_machine_name: string = "category";
-  @Input() taxonomy_name: string = "Categories";
-  display_parent = false;
-  sub: any;
-
-  constructor(public wpcore: WpcoreService, private route:ActivatedRoute, 
-    private router: Router) { 
-
-    //this.taxonomy_machine_name = this.actRoute.snapshot.params.taxonomy;
+export class TaxonomyComponent implements OnInit {
 
 
-
-    
-  }
-
-
-  ngOnInit() {
-    this.sub = this.route.data.subscribe(v => {
-      this.taxonomy_machine_name = v.taxonomy;
-      switch(this.taxonomy_machine_name) {
-        case 'category':
-          this.display_parent = true;
-          this.taxonomy_name = 'Categories';
-        break;
-
-        case 'post_tag': 
-          this.display_parent = false;
-          this.taxonomy_name = 'Tags';
-        break;
-
-        default: 
-      }        
-    });
-  }
-
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
-  */
   ngOnInit() {}
   ngOnDestroy() {}
 }

@@ -213,21 +213,6 @@ export class WphelperModule {
     return false;
   }
 
-  //Check if current term is duplicate
-  public isDuplicateTerm(term: any, terms: any){
-    var find = {
-      name: term.name,
-      slug: term.slug,
-      parent: term.parent,
-      taxonomy: term.taxonomy,
-    };
-    var com = _.findLastIndex(terms, find);
-    if(com == -1) {
-      return false;
-    }
-    return true;
-    //name, slug, category, parent
-  }
 
   public getUniqueSlug(text:string, list:any) {
     var slug = this.slugify(text);

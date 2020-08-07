@@ -161,7 +161,7 @@ export class WpcoreService {
           console.log("loaded from local", db);
           this.dbData = db;
           console.log("after loading and fixing", this.dbData);
-          this.getTaxonomyTree('category');//this is for test @todo remove
+          //this.getTaxonomyTree('category');//this is for test @todo remove
           this.dbStatus = 1;
           this.loaded = true;
           resolve(true);
@@ -219,6 +219,13 @@ export class WpcoreService {
     return this.dbData; 
   }
 
+  public getTable(table){
+    console.log("inside get tables", this.dbData, table);
+    if(_.has(this.dbData, table)) {
+      return this.dbData[table];
+    }
+    return true;
+  }
 
 
   load() { 
@@ -240,7 +247,7 @@ export class WpcoreService {
       this.http.get(apiURL).subscribe(response => {
         this.dbData = this.fixData(response);
         console.log("after loading and fixing", this.dbData);
-        this.getTaxonomyTree('category');//this is for test @todo remove
+        //this.getTaxonomyTree('category');//this is for test @todo remove
         this.dbStatus = 1;
         this.loaded = true;
         resolve(true);
@@ -566,16 +573,6 @@ export class WpcoreService {
     //@todo
   }
 
-  getTermsByTaxonomy(taxonomy: string = "category"){
-    return _.filter(this.dbData.terms, function(item){ 
-      return item.taxonomy == taxonomy; 
-    });
-  }
-
-  getTaxonomyTree(taxonomy: string = "category") {
-    var terms = this.getTermsByTaxonomy();
-    return this.wphelper.list_to_tree(terms);
-  } 
 
   //Delete entities
   //@todo check deendencies, integrities etc

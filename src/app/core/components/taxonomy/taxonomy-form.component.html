@@ -12,32 +12,86 @@
 
     <div class = "row">
       <div class = "col-sm-5">
-        <form class="form-inline" [formGroup]="bulkActionsForm" (ngSubmit)="onSubmitbulkActionsForm()">
+        <div class="form-inline" >
           <div class="form-group mr-sm-1 mb-2"> 
             
-            <select formControlName="bulkaction" class = "form-control form-control-sm">
+            <select  class = "form-control form-control-sm">
               <option value="">Bulk Actions</option>
               <option value="delete">Delete</option> 
             </select>
           </div>
-          <button type="submit" class="btn btn-outline-primary mb-2">Apply</button>
+          <a  class="btn btn-outline-primary mb-2">Apply</a>
 
-        </form>
+        </div>
       </div>
 
 
-      <div class = "col-sm-7">
-        <form class="form-inline float-right" [formGroup]="termSearchForm" (ngSubmit)="onSubmitTermSearchForm()">
+      <div class = "col-sm-7"> 
+        <div class="form-inline float-right" >
           <div class="form-group ml-sm-1 mb-2">
-            <input type="text" class="form-control form-control-sm" placeholder="search" formControlName="searchterm">
+            <input (keyup)="updateFilter($event)" type="text" class="form-control form-control-sm" placeholder="search {{taxonomy_name}}" >
           </div>
-          <button type="submit" class="btn btn-outline-primary mb-2 ml-sm-1">Search {{taxonomy_name}}</button>
-        </form>
+          
+        </div>
       </div>
     </div>
-    <div id = "tabulator-div-category" ></div>
-    <div id = "tabulator-div-post_tag" ></div>
-    <div id = "tabulator-div" ></div>
+    
+    <div id = "tabulator-div" >
+      
+            <ngx-datatable class="bootstrap w-100" 
+              #table
+              [selected]="selectedRows"
+              selectionType="checkbox"
+              [selectAllRowsOnPage]="false"
+              [displayCheck]="displayCheck"
+              [rows]="rows" 
+              (select)="onSelect($event)"
+              columnMode = 'force'
+              trackByProp = 'term_id'
+              [limit]="10"
+              [headerHeight]="50"
+              [footerHeight]="50"
+              rowHeight="auto"
+
+              [columns]="columns"> 
+
+
+          <ngx-datatable-column
+            [width]="30"
+            [sortable]="false"
+            [canAutoResize]="false"
+            [draggable]="false"
+            [resizeable]="false"
+            [headerCheckboxable]="true"
+            [checkboxable]="true"
+          >
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Name" minWidth = "235">
+            <ng-template let-column="column" ngx-datatable-header-template>{{ column.name }}</ng-template>
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              <div class = "hoverwrap">
+              {{ value }}
+              <div class = "hoveropen">
+                <ul class = "list-inline mb-0">
+                  <li class="list-inline-item"><a class = "href" (click) = "termEdit()">Edit</a></li><li class="list-inline-item"> | </li>
+                  <li class="list-inline-item"><a class = "href" (click) = "termQuickEdit()">Quick Edit</a></li><li class="list-inline-item"> | </li>
+                  <li class="list-inline-item"><a class = "href" (click) = "termDelete()">Delete</a></li><li class="list-inline-item"> | </li>
+                  <li class="list-inline-item"><a class = "href" >View</a></li>
+                </ul>
+              </div>
+              </div>
+            </ng-template> 
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Description"></ngx-datatable-column>
+          <ngx-datatable-column name="Slug"></ngx-datatable-column>
+          <ngx-datatable-column name="Count"></ngx-datatable-column>
+
+
+            </ngx-datatable>
+
+
+    </div>
     <small>Deleting a category does not delete the posts in that category. Instead, posts that were only assigned to the deleted category are set to the default category Uncategorized. The default category cannot be deleted.
       </small>
   </div>
