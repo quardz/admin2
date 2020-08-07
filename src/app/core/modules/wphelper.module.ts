@@ -255,6 +255,19 @@ export class WphelperModule {
     return dst;
   }
 
+  //@todo
+  public objIssetReturn(obj, props, _default = null) {
+    if(obj && props) {
+      var _obj:any;
+      for(let _p in props) {
+        var prop = props[_p];
+        //if(_.has()){
+
+        //}
+      }
+    }
+  }
+
   //Create slug from string
   public slugify(str, replacer = "-") {
     str = str.replace(/^\s+|\s+$/g, ''); // trim
