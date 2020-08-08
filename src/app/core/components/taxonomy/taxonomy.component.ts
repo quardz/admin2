@@ -8,6 +8,8 @@ import { NgxDatatableModule,DatatableComponent } from '@swimlane/ngx-datatable';
 import * as _ from 'underscore';
 import { ToastrService } from 'ngx-toastr';
 import * as cloneDeep from 'lodash/cloneDeep';
+import { NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 
 import { WpcoreService } from '../../wpcore.service';
 import { WphelperModule } from '../../modules/wphelper.module';
@@ -29,7 +31,7 @@ export class TaxonomyFormComponent {
   //Data
   terms: any[];
   tax_tree: any;
-  
+  tax_tree_selector: any;
   
   //Table 
   rows:any;
@@ -50,7 +52,7 @@ export class TaxonomyFormComponent {
     'delete': 'Delete',
   };
 
-  // Forms
+  // Forms new
   form = new FormGroup({});
   model = { 
     name: "",
@@ -60,12 +62,28 @@ export class TaxonomyFormComponent {
     taxonomy: "",
   };
   fields: FormlyFieldConfig[] = [];
+  
+  // Fotm Edit
+  quickEdit:number=0;
 
+  formedit = new FormGroup({});
+  formeditmodel = { 
+    name: "",
+    slug: "",
+    parent:0,
+    description: "",
+    taxonomy: "",
+    term_id: 0
+  };
+  formeditFields: FormlyFieldConfig[] = [];
 
   constructor (private wpcore: WpcoreService,  
     private wphelper: WphelperModule, 
     public taxo: TaxonomyModule,
     private toastr: ToastrService,
+    config: NgbModalConfig, 
+    private modalService: NgbModal,
+
     //public fb: FormBuilder
       ) {
 
@@ -108,21 +126,14 @@ export class TaxonomyFormComponent {
       }
     });
 
-    // update the rows
     this.rows = temp;
-    // Whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
 
 
   initiate() {
-    
-    this.tax_tree = this.taxo.getTaxonomyTree(this.taxonomy_machine_name);
-    
-
-    var selector = this.wphelper.treeSort(this.tax_tree);
-    this.defineFields(selector);
     this.getData();    
+    this.defineFields(this.tax_tree_selector);
     this.ngxDataTableTerms();
   }
 
@@ -130,15 +141,13 @@ export class TaxonomyFormComponent {
   getData() {
     this.taxo.getTerms();
     this.terms = this.taxo.getTermsByTaxonomy(this.taxonomy_machine_name);
+    this.tax_tree_selector = this.taxo.getTaxonomyTree(this.taxonomy_machine_name);    
     this.tempRows = [...this.terms];
   }
 
-
-
-  //forms 
-  defineFields(_parents?:any) {
-
-    this.fields = [
+  //Fields appears on edit and add forms
+  editAddFields(_parents) {
+    return [
       {
         key: 'name',
         type: 'input',
@@ -190,6 +199,12 @@ export class TaxonomyFormComponent {
     ];
   }
 
+  //forms 
+  defineFields(_parents?:any) {
+    this.fields = cloneDeep(this.editAddFields(_parents));
+    
+  }
+
   onSubmit() {
     var res = this.taxo.addTerm(this.model.name, this.taxonomy_machine_name, this.model.slug, this.model.description, this.model.parent);
     if(res.status) {
@@ -206,6 +221,7 @@ export class TaxonomyFormComponent {
       this.toastr.error(res.message);
       console.log("error creating term", res.data);
     }
+    this.initiate();
   }
 
   onSubmitbulkActionsForm() {/*
@@ -238,16 +254,53 @@ export class TaxonomyFormComponent {
     }     */
   }
 
-  termEdit() {
+  termEdit(row, modal) {
+    console.log("term edit", row);
 
+    var modalSettings = {
+      size: 'xl',
+      centered: true, 
+      scrollable: true,
+    };    
+    
+
+    this.formeditFields = cloneDeep(this.editAddFields(this.tax_tree_selector));
+    this.formeditmodel = {
+      term_id: row.term_id,
+      name: row.name,
+      slug: row.slug,
+      parent: row.parent,
+      description: row.description,
+      taxonomy: row.taxonomy,
+    }
+    this.modalService.open(modal, modalSettings);
   }
 
-  termQuickEdit() {
+  termEditUpdate(){
+    console.log("term update edit", this.formeditmodel);
+    var _res = this.taxo.updateTerm(this.formeditmodel);
+    if(_res.status) {
+      this.initiate();
+      this.toastr.success(_res.message);
+    }
+    else {
+      this.toastr.error(_res.message); 
+    }    
+  }
 
+  termQuickEdit(row) {
+    this.quickEdit = row.term_id;
   }
   
-  termDelete() {
-
+  termDelete(row) {
+    var _res = this.taxo.deleteTerm(row);
+    if(_res.status) {
+      this.initiate();
+      this.toastr.success(_res.message);
+    }
+    else {
+      this.toastr.error(_res.message); 
+    }
   }
 
   ngOnInit() {
@@ -258,6 +311,8 @@ export class TaxonomyFormComponent {
 
 
   displayCheck(){return true;}
+
+  
 
 }
 

@@ -343,8 +343,7 @@ export class MenusComponent implements OnInit {
   //Get the categories for menu
   getCategoryMenu() {
 
-    var _tax_tree = this.taxo.getTaxonomyTree('category');
-    var _categories = this.wphelper.treeSort(_tax_tree, 0, '-');
+    var _categories = this.taxo.getTaxonomyTree('category');
     if(_categories) {
       for(let _c in _categories) {
         var _term_id = _categories[_c].value;

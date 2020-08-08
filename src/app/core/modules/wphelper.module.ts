@@ -13,6 +13,12 @@ import * as cloneDeep from 'lodash/cloneDeep';
 })
 export class WphelperModule { 
 
+
+  //Compress the json DB file, use to save
+  public compressDbJson(json) {
+    //@todo
+  }
+
   public getPostsByType(posts, post_type, post_status = "publish") {
     var _filter = {
       post_type: post_type,
@@ -185,34 +191,6 @@ export class WphelperModule {
 
 
 
-  //Sort the tree array for select options
-  treeSort(tree: any, depth: number = 0, delimeter = "-"){
-    var options = [];
-    if(depth == 0) {
-      options.push({label:'None', value:0});
-    }
-    for(let _i in tree) {
-      var _prefix = delimeter.repeat(depth);
-      if(depth) {
-        _prefix = _prefix + " ";
-      }
-      var label = _prefix + tree[_i].name
-      options.push({label:label, value: tree[_i].term_id});
-      if(_.size(tree[_i].children)) {
-        var children = this.treeSort(tree[_i].children, depth + 1, delimeter);
-        if(children) {
-          for(let _j in children) {
-            options.push({label:children[_j].label, value: children[_j].value});
-          }
-        }
-      }
-    }
-    if(_.size(options)) {
-      return options;
-    }
-    return false;
-  }
-
 
   public getUniqueSlug(text:string, list:any) {
     var slug = this.slugify(text);
@@ -271,6 +249,11 @@ export class WphelperModule {
 
     return str;
   }
+
+  public isNumber(n) { 
+    return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
+  }
+
 
   //Convert single file to blob
   public fileToBlob(file) {
