@@ -10,15 +10,18 @@
   <div class = "col-sm-8">
     <div class = "row">
       <div class = "col-sm-5">
-        <div class="form-inline" >
-          <div class="form-group mr-sm-1 mb-2">
-            <select  class = "form-control form-control-sm">
+
+        <form class="form-inline" [formGroup]="bulkActionsForm" (ngSubmit)="onSubmitbulkActionsForm()">
+          <div class="form-group mr-sm-1 mb-2"> 
+            
+            <select formControlName="bulkaction" class = "form-control form-control-sm">
               <option value="">Bulk Actions</option>
-              <option value="delete">Delete</option>
+              <option value="delete">Delete</option> 
             </select>
           </div>
-          <a  class="btn btn-outline-primary mb-2">Apply</a>
-        </div>
+          <button type="submit" class="btn btn-outline-primary mb-2">Apply</button>
+        </form>        
+
       </div>
       <div class = "col-sm-7">
         <div class="form-inline float-right" >
@@ -58,7 +61,7 @@
         <ng-template let-column="column" ngx-datatable-header-template>{{ column.name }}</ng-template>
         <ng-template let-value="value" let-row="row" ngx-datatable-cell-template >
           <div class = "w-100">
-            {{ value }}
+            <ng-container *ngFor="let _p of row.parents">-</ng-container>{{ value }}
             <div class = "hoveropen" *ngIf = "row.term_id > 1">
               <ul class = "list-inline mb-0">
                 <li class="list-inline-item"><a class = "href" (click) = "termEdit(row, termeditmodal)">Edit</a></li>

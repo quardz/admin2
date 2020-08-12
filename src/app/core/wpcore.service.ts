@@ -234,7 +234,6 @@ export class WpcoreService {
   }
 
   public getTable(table){
-    console.log("inside get tables", this.dbData, table);
     if(_.has(this.dbData, table)) {
       return this.dbData[table];
     }
@@ -314,6 +313,7 @@ export class WpcoreService {
         }
         data.terms[_t][12] = _path.replace(/\/$/, "").replace(/^\/+/, '');
         data.terms[_t][13] = [];
+        data.terms[_t][14] = 0;//weight
         //data.terms[_t][12] = "/" +  _path
         var _route = {
           url: data.terms[_t][12], 
@@ -326,6 +326,7 @@ export class WpcoreService {
       }
       data.terms._describe[12] = "url";
       data.terms._describe[13] = "children";
+      data.terms._describe[14] = "weight";
     }
     //END : URL for terms
 

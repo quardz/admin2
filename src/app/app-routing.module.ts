@@ -13,6 +13,8 @@ import { MenusComponent } from './core/components/menus/menus.component';
 import { ThemesListComponent, ThemesComponent } from './core/components/themes/themes.component';
 import { WidgetsComponent } from './core/components/widgets/widgets.component';
 import { DashboardComponent } from './core/components/dashboard/dashboard.component';
+import { PostsComponent } from './core/components/posts/posts.component';
+
 
 
 const routes: Routes = [
@@ -32,6 +34,7 @@ const routes: Routes = [
   { path: 'admin/posts/post_tag', component: TaxonomyPosttagComponent},
   
   { path: 'admin/posts/new', component: WpeditorComponent},
+  { path: 'admin/posts/list', component: PostsComponent},
 
   { path: 'admin/media/library', component: MediaComponent},
 

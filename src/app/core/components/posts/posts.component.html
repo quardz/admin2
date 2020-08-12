@@ -1,0 +1,108 @@
+<h1 class = "page-title">{{postTypes[post_type].title}}</h1>
+<div class = "row">
+
+  <div class = "col-sm-12 col-status small">
+    <ul class = "list-inline">
+      <li class = "list-inline-item"><a class = "href">All(20)</a></li>
+      <li class = "list-inline-item"><a class = "href">Published(12)</a></li>
+      <li class = "list-inline-item"><a class = "href">Draft(12)</a></li>
+      <li class = "list-inline-item"><a class = "href">Trash(12)</a></li>
+      <li class = "list-inline-item float-right"><a class = "href">20 items</a></li>
+    </ul>
+  </div>
+
+  <div class = "col-sm-12 col-filters">
+    
+  </div>
+
+  <div class ="col-sm-12 col-table">
+
+      <ngx-datatable 
+        [rows]="rows" 
+        [columns]="columns"
+        class="bootstrap w-100" 
+        #posttable
+        [selected]="selectedRows"
+        selectionType="checkbox"
+        [selectAllRowsOnPage]="false"
+        [displayCheck]="displayCheck"
+        [rows]="rows" 
+        (select)="onSelect($event)"
+        columnMode = 'force'
+        trackByProp = 'ID'
+        [limit]="10"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        rowHeight="auto"        
+        > 
+
+        <ngx-datatable-column
+          [maxWidth]="30"
+          [sortable]="false"
+          [canAutoResize]="false"
+          [draggable]="false"
+          [resizeable]="false"
+          [headerCheckboxable]="true"
+          [checkboxable]="true"
+        >
+        </ngx-datatable-column>
+        <ngx-datatable-column 
+          [minWidth]="500"
+          [sortable]="false"
+          [canAutoResize]="true"
+          [draggable]="false"
+          [resizeable]="false"
+          prop="post_title"
+          name="Title"
+          cellClass = "hoverwrap">
+
+          <ng-template let-column="column" ngx-datatable-header-template>{{ column.name }}</ng-template>
+          <ng-template let-value="value" let-row="row" ngx-datatable-cell-template >
+            <div class = "w-100">
+              {{ value }}
+              <div class = "hoveropen">
+                <ul class = "list-inline mb-0">
+                  <li class="list-inline-item"><a class = "href" >Edit</a></li>
+                  <li class="list-inline-item"><a class = "href" >Quick Edit</a></li>
+                  <li class="list-inline-item"><a class = "href" >Trash</a></li>
+                  <li class="list-inline-item"><a class = "href" >View</a></li>
+                </ul>
+              </div>
+            </div>
+          </ng-template>
+
+        </ngx-datatable-column>
+        <ngx-datatable-column 
+          [minWidth]="100"
+          [sortable]="false"
+          [canAutoResize]="true"
+          [draggable]="false"
+          [resizeable]="false"
+          prop="post_author"
+          name="Author">          
+        </ngx-datatable-column>
+        <ngx-datatable-column 
+          [minWidth]="70"
+          [sortable]="false"
+          [canAutoResize]="true"
+          [draggable]="false"
+          [resizeable]="false"
+          prop="comment_count"
+          name="Comments">          
+          <ng-template let-column="column" ngx-datatable-header-template></ng-template>
+        </ngx-datatable-column>        
+        <ngx-datatable-column 
+          [minWidth]="170"
+          [sortable]="false"
+          [canAutoResize]="true"
+          [draggable]="false"
+          [resizeable]="false"
+          prop="post_date"
+          name="Date">           
+        </ngx-datatable-column>    
+      </ngx-datatable>
+
+
+  </div>
+
+</div>

@@ -83,28 +83,21 @@ export class TaxonomyFormComponent {
     private toastr: ToastrService,
     config: NgbModalConfig, 
     private modalService: NgbModal,
-
-    //public fb: FormBuilder
+    public fb: FormBuilder
       ) {
 
   }
 
   //Define forms for search and action forms
-  /*
-  termSearchForm = this.fb.group({
-    searchterm: ['']
-  });
   
   bulkActionsForm = this.fb.group({
     bulkaction: ['']
   });
-  */
+  
 
 
   //After Selecting rows
   onSelect({ selected }) {
-    console.log('Select Event', selected, this.selectedRows);
-
     this.selectedRows.splice(0, this.selectedRows.length);
     this.selectedRows.push(...selected);
   }
@@ -210,7 +203,7 @@ export class TaxonomyFormComponent {
     if(res.status) {
       this.toastr.success(res.message);
       this.model = {
-        name: " ",
+        name: "",
         slug: "",
         parent:0,
         description: "",
@@ -219,43 +212,40 @@ export class TaxonomyFormComponent {
     }
     else {
       this.toastr.error(res.message);
-      console.log("error creating term", res.data);
     }
     this.initiate();
   }
 
-  onSubmitbulkActionsForm() {/*
+  onSubmitbulkActionsForm() {
     var _counts = {
       total:0,
       deleted:0,
     };
     if(this.bulkActionsForm.get('bulkaction').value == 'delete') {  
-      var rows = [];
+      var rows = cloneDeep(this.selectedRows);
       if(rows) {
         if(confirm("Are you sure to delete selected terms")) {
           for(let _index in rows) {
             var row = rows[_index];
-            if(row) {
-              var row_data = row.getData();
-              if(row_data.term_id != 1) {
-                _counts.total++;
-                if(this.wpcore.deleteEntity(row_data.term_id, 'terms')) {
-                  _counts.deleted++;
-                }
+            if(row.term_id != 1) {
+              _counts.total++;
+              var msg = this.taxo.deleteTerm(row.term_id, false);
+              if(msg.status) {
+                _counts.deleted++;
               }
             }
           }
+          this.initiate();
           this.toastr.success('Deleted!', "Deleted " + _counts.deleted + " of total " + _counts.total + ".");
         }
       }
       else {
         this.toastr.error("Error", "Nothing to delete, select atleast 1 item.");
       }
-    }     */
+    }     
   }
 
   termEdit(row, modal) {
-    console.log("term edit", row);
 
     var modalSettings = {
       size: 'xl',
@@ -277,7 +267,6 @@ export class TaxonomyFormComponent {
   }
 
   termEditUpdate(){
-    console.log("term update edit", this.formeditmodel);
     var _res = this.taxo.updateTerm(this.formeditmodel);
     if(_res.status) {
       this.initiate();

@@ -253,8 +253,6 @@ export class WphelperModule {
   public isNumber(n) { 
     return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
   }
-
-
   //Convert single file to blob
   public fileToBlob(file) {
 

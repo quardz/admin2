@@ -24,7 +24,10 @@ export class TaxonomyModule {
     private wpcore: WpcoreService){  
 
     this.getTerms();
+    
   }
+
+  //@todo bring all datafix stuffs about term here from wpcore if possible 
 
   loadTerms(){
     this.terms = this.wpcore.getTable('terms');
@@ -32,17 +35,32 @@ export class TaxonomyModule {
   }
 
   //Reorder the terms based on the tree structure for better table disply 
-  loadTerms_2(){
+  loadCategory(){
     var _terms = this.wpcore.getTable('terms');
     var categories = _.filter(_terms, function(item){ 
       return item.taxonomy == 'category'; 
     });
     var tree =  this.wphelper.list_to_tree(categories);
     var flat_tree = this.treeSort(tree);
-    
-    //get terms 
-    //Make it tree 
-    //Push it to term based on 
+    var new_terms:any = [];
+    if(flat_tree && categories) {
+      for (let _f in flat_tree) {
+        var flat_term_id = flat_tree[_f].value;
+        var new_term = _.filter(categories, function(item){ 
+          return item.term_id == flat_term_id; 
+        });
+        if(new_term && _.size(new_term)) {
+          new_term[0].parents = this.getParents(new_term[0].term_id, categories);
+          new_terms.push(new_term[0]);  
+        }
+        
+      }
+    }
+    return new_terms;
+  }
+
+  getTermByID(term_id){
+
   }
 
   getTerms(){
@@ -59,6 +77,35 @@ export class TaxonomyModule {
     }
     this.slugs = slugs;
     
+  }
+
+  //Get list of parents of given term ID
+  getParents(term_id, terms) {
+    var parents = [];
+    if(terms && term_id) {
+      var term = _.filter(terms, function(item){ 
+        return item.term_id == term_id; 
+      });
+      if(term && _.size(term)) {
+        var parent_id = term[0].parent;
+        
+        if(parent_id) {
+          parents.push(parent_id);
+          var _parents = this.getParents(parent_id, terms);
+          if(_parents) {
+            for(let _p in _parents) {
+              parents.push(_parents[_p]);
+            }
+          }
+        }
+      }
+    }
+    return parents;
+  }
+
+  //Get list of children of given term id 
+  getChildren(term_id, terms){
+    //@todo everything 
   }
 
   // reutn {status:, msg:}
@@ -84,7 +131,6 @@ export class TaxonomyModule {
         }
       }
       else {
-        console.log("new term", term, typeof term);
         var msg = this.wpcore.saveEntity(term, 'terms'); //Replace with better save entity, somthign like save term
         return {
           status: 1,
@@ -161,7 +207,7 @@ export class TaxonomyModule {
     //@todo
     //Reordering the tree after delete
 
-    var _term_id = 0;
+    var _term_id = row;
     if(_.isString(row)) {
       _term_id = parseInt(row);
     }
@@ -171,11 +217,13 @@ export class TaxonomyModule {
     }
 
     if(this.terms && _term_id && _.isNumber(_term_id) && _term_id > 1) {
+
       for(let _t in this.terms) {
         if(this.terms[_t].term_id == _term_id) {
 
-          if(confirm("Are you sure to delete :: " + this.terms[_t].name)) {          
+          if(!confirmation || confirm("Are you sure to delete :: " + this.terms[_t].name)) {          
             var _delete_term = cloneDeep(this.terms[_t]);
+            //@todo reordering the tree here to escap the errors
             this.terms.splice(_t, 1);
             return {
               status: 1,
@@ -200,6 +248,11 @@ export class TaxonomyModule {
   }
 
   getTermsByTaxonomy(taxonomy: string = "category"){
+
+    if(taxonomy == 'category') {
+      return this.loadCategory();
+    }
+
     return _.filter(this.terms, function(item){ 
       return item.taxonomy == taxonomy; 
     });
