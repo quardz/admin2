@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { WpeditorComponent } from './wpeditor.component';
 
@@ -6,7 +6,7 @@ describe('WpeditorComponent', () => {
   let component: WpeditorComponent;
   let fixture: ComponentFixture<WpeditorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ WpeditorComponent ]
     })
