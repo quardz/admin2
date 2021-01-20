@@ -157,9 +157,13 @@
           <div class = "card-body-pad">
             
             <div class="form-group">
-              <select class="form-control form-control-lg" id="_post_categories" multiple name = "_post_categories"  [(ngModel)]="model._post_categories" >
-                <option *ngFor="let _cat of categories" [ngValue] = "_cat.value">{{_cat.label}}</option>
-              </select>
+              
+
+                    <div class="form-check" *ngFor="let _cat of categories">
+                      <input ngModel name = "{{_cat.value}}" [(ngModel)] = "_cat._selected" value ="_cat._selected" type="checkbox" class="form-check-input" id="menuitemcat-{{_cat.value}}"/>
+                      <label class="form-check-label" for="menuitemcat-{{_cat.value}}">{{_cat.label}}</label>
+                    </div>
+                    <button class="btn btn-outline-primary btn-tn mb-3 float-right">Add to menu</button>
             </div>
 
           </div>

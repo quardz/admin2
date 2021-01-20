@@ -21,6 +21,8 @@ import { SortablejsModule } from 'ngx-sortablejs';
 //Custom
 import { WphelperModule } from './core/modules/wphelper.module';
 import { MediaModule } from './core/modules/media.module';
+import { TaxonomyModule } from './core/modules/taxonomy.module';
+import { PostsModule } from './core/modules/posts.module';
 import { WpcoreService } from './core/wpcore.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -48,6 +50,7 @@ import { MenuItemComponent } from './core/components/menus/menu-item.component';
 import { WidgetsComponent } from './core/components/widgets/widgets.component';
 import { ThemesComponent,ThemesListComponent } from './core/components/themes/themes.component';
 import { DashboardComponent } from './core/components/dashboard/dashboard.component';
+import { PostsComponent } from './core/components/posts/posts.component';
 
 
 var _formly_settings = {
@@ -91,7 +94,7 @@ export function WpDBProvider(wpcore: WpcoreService) {
     MediaComponent,
     MenusComponent,   
     MenuItemComponent, WidgetsComponent,
-    ThemesListComponent, ThemesComponent, DashboardComponent,
+    ThemesListComponent, ThemesComponent, DashboardComponent, PostsComponent,
 
   ],
   imports: [
@@ -108,7 +111,9 @@ export function WpDBProvider(wpcore: WpcoreService) {
     FormlyBootstrapModule,
     HttpClientModule,
     WphelperModule,
+    TaxonomyModule,
     MediaModule,
+    PostsModule,
     NgbModule,
     ngfModule,
     TreeModule,

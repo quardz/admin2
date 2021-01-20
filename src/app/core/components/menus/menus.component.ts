@@ -10,6 +10,8 @@ import { ITheme, IWidget, IRegion, IMenuItem, IMenu } from '../../wpinterface';
 import { WpcoreService } from '../../wpcore.service';
 import { WpdataService } from '../../wpdata.service';
 import { WphelperModule } from '../../modules/wphelper.module';
+import { TaxonomyModule } from '../../modules/taxonomy.module';
+
 import { MenuItemComponent } from './menu-item.component';
 
 @Component({
@@ -72,6 +74,8 @@ export class MenusComponent implements OnInit {
     private toastr: ToastrService,
     private wpcore: WpcoreService,  
     private wpdata: WpdataService,  
+    private taxo: TaxonomyModule, 
+
     private wphelper: WphelperModule) {
     this.currentTheme = wpcore.getTheme();
     this.prepare();
@@ -339,8 +343,7 @@ export class MenusComponent implements OnInit {
   //Get the categories for menu
   getCategoryMenu() {
 
-    var _tax_tree = this.wpcore.getTaxonomyTree('category');
-    var _categories = this.wphelper.treeSort(_tax_tree, 0, '-');
+    var _categories = this.taxo.getTaxonomyTree('category');
     if(_categories) {
       for(let _c in _categories) {
         var _term_id = _categories[_c].value;

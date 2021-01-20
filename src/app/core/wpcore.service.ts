@@ -37,7 +37,7 @@ export class WpcoreService {
   sitePublished: boolean = false;
   sitePublishedTime: number = 0;
   public sites: ISites[];
-  semaphore: any = {};
+  
   coreEntityTables = ['users', 'posts', 'terms', 'files'];
   tablePKs = {
     'users': 'ID',
@@ -47,7 +47,7 @@ export class WpcoreService {
 
   };
 
-  activities:any = [];
+  
 
   public currentTheme = 'author';
 
@@ -59,53 +59,66 @@ export class WpcoreService {
       private wpdata: WpdataService,
       private storage: StorageMap, 
       ) {
+    this.prepareWP();
+
+  }
+
+  //@todo this will bootstrap the site in order
+  public prepareWP() {
     this.loadSites();
-    this.resolveDataURL();
 
   }
 
-  //Add each activity
-  public addActivity(_type:string, title?:string, msg?:string, data?:any){
-    if(_type || title || msg || data) {
-      var _event = {
-        type: _type,
-        title: title,
-        msg: msg,
-        data: data,
-      };      
-      this.activities.push(_event);
+  public postDataLoad() {
+    this.resolveDataURL();    
+    this.loadSemaphore();    
+  }
+
+  //---------------------------------------------------------------------
+  //-----------------------------semaphore-------------------------------
+  //---------------------------------------------------------------------
+
+  //It should return next id always, not the current one. 
+
+  semaphore: any = {};
+
+  public loadSemaphore() {
+    this.semaphore = this.getOption('semaphore');
+    if(_.isNull(this.semaphore) || _.isUndefined(this.semaphore) || _.isEmpty(this.semaphore))  {
+       this.generateSemaphore();
     }
   }
-  //Get the activity
-  public getActivities() {
-    return this.activities;
-  }
 
-  public getSemaphore(entity_type:string = '', get_next:boolean = true){
+  public getSemaphore(entity_type:string = ''){
     if(entity_type && this.semaphore[entity_type]) {
-      if(get_next) {
-        return (parseInt(this.semaphore[entity_type]) + 1);
-      }
-      return parseInt(this.semaphore[entity_type]);
+      var _sema = parseInt(this.semaphore[entity_type]) + 1;
+      return _sema;
     }
-    return this.semaphore;
+    return false;
   }
-
+  
+  //@todo, finetue this
   private generateSemaphore(){
-    console.log("semaphore starts", this.coreEntityTables, "Map pk",this.mapIndex_Pk);
+    this.semaphore = {};
     for(let _index in this.coreEntityTables) {
       let _entity_type = this.coreEntityTables[_index];
       if(_.has(this.mapIndex_Pk, _entity_type)) {
         var all_keys = _.map(_.allKeys(this.mapIndex_Pk[_entity_type]), Number);
         if(all_keys) {
-          this.semaphore[_entity_type] = _.max(all_keys);
+          this.semaphore[_entity_type] = (_.max(all_keys) + 1);
         }
       }
     }
   }
 
-  private setSemaphore(entity_type: string, entity_id: number) {
-    this.semaphore[entity_type] = entity_id;
+  private setSemaphore(entity_type: string, entity_id?: number) {
+    if(entity_id){
+      this.semaphore[entity_type] = entity_id;
+    }
+    else {
+      this.semaphore[entity_type]++;  
+    }
+    this.setOption('semaphore', this.semaphore);  
   }
 
 
@@ -161,9 +174,10 @@ export class WpcoreService {
           console.log("loaded from local", db);
           this.dbData = db;
           console.log("after loading and fixing", this.dbData);
-          this.getTaxonomyTree('category');//this is for test @todo remove
+          //this.getTaxonomyTree('category');//this is for test @todo remove
           this.dbStatus = 1;
           this.loaded = true;
+          this.postDataLoad();
           resolve(true);
         }
         else {
@@ -219,6 +233,12 @@ export class WpcoreService {
     return this.dbData; 
   }
 
+  public getTable(table){
+    if(_.has(this.dbData, table)) {
+      return this.dbData[table];
+    }
+    return true;
+  }
 
 
   load() { 
@@ -240,9 +260,10 @@ export class WpcoreService {
       this.http.get(apiURL).subscribe(response => {
         this.dbData = this.fixData(response);
         console.log("after loading and fixing", this.dbData);
-        this.getTaxonomyTree('category');//this is for test @todo remove
+        //this.getTaxonomyTree('category');//this is for test @todo remove
         this.dbStatus = 1;
         this.loaded = true;
+        this.postDataLoad();
         resolve(true);
       },
       error => {
@@ -292,6 +313,7 @@ export class WpcoreService {
         }
         data.terms[_t][12] = _path.replace(/\/$/, "").replace(/^\/+/, '');
         data.terms[_t][13] = [];
+        data.terms[_t][14] = 0;//weight
         //data.terms[_t][12] = "/" +  _path
         var _route = {
           url: data.terms[_t][12], 
@@ -304,6 +326,7 @@ export class WpcoreService {
       }
       data.terms._describe[12] = "url";
       data.terms._describe[13] = "children";
+      data.terms._describe[14] = "weight";
     }
     //END : URL for terms
 
@@ -484,7 +507,7 @@ export class WpcoreService {
     }
 
     //Generate Semaphores for future use
-    this.generateSemaphore();
+    
 
     
     return data;
@@ -538,12 +561,14 @@ export class WpcoreService {
     return this.getEntityByID('terms', term_id);
   }  
 
+
+  //@todo review
   saveEntity(data:any, entity_type: string) {
 
     if(_.contains(this.coreEntityTables, entity_type) && data) {
       
       var new_entity = this.wphelper.getEmptyEntityObj(this.dbData, entity_type);
-      var next_entity_id = this.getSemaphore('terms');
+      var next_entity_id:any = this.getSemaphore('terms');
       for(let _key in data) {
         if(_.has(new_entity, _key)) {
           new_entity[_key] = data[_key];
@@ -557,7 +582,7 @@ export class WpcoreService {
       this.dbData[entity_type].push(new_entity);
       var new_size = _.size(this.dbData[entity_type]);
       if(new_size == (old_size+1)) { 
-        this.setSemaphore(entity_type, next_entity_id);
+        this.setSemaphore(entity_type, parseInt(next_entity_id));
         this.mapIndex_Pk[entity_type][next_entity_id] = new_size;
         return this.dbData[entity_type][old_size];
       }
@@ -566,16 +591,6 @@ export class WpcoreService {
     //@todo
   }
 
-  getTermsByTaxonomy(taxonomy: string = "category"){
-    return _.filter(this.dbData.terms, function(item){ 
-      return item.taxonomy == taxonomy; 
-    });
-  }
-
-  getTaxonomyTree(taxonomy: string = "category") {
-    var terms = this.getTermsByTaxonomy();
-    return this.wphelper.list_to_tree(terms);
-  } 
 
   //Delete entities
   //@todo check deendencies, integrities etc
@@ -666,5 +681,29 @@ export class WpcoreService {
     }
     return false;
   }
+
+  //---------------------------------------------------------------------
+  //-------------------------activities----------------------------------
+  //---------------------------------------------------------------------
+
+  activities:any = [];
+
+  //Add each activity
+  public addActivity(_type:string, title?:string, msg?:string, data?:any){
+    if(_type || title || msg || data) {
+      var _event = {
+        type: _type,
+        title: title,
+        msg: msg,
+        data: data,
+      };      
+      this.activities.push(_event);
+    }
+  }
+  //Get the activity
+  public getActivities() {
+    return this.activities;
+  }
+
 }
  

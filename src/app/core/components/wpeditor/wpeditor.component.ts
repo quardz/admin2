@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { WpcoreService } from '../../wpcore.service';
 import { WphelperModule } from '../../modules/wphelper.module';
-
+import { TaxonomyModule } from '../../modules/taxonomy.module';
 
 
 
@@ -60,7 +60,8 @@ export class WpeditorComponent implements OnInit {
 
   constructor(
     private wpcore: WpcoreService,  
-    private wphelper: WphelperModule, 
+    private wphelper: WphelperModule,
+    private taxo: TaxonomyModule, 
     private toastr: ToastrService) {
 
     this.prepareFormData();
@@ -68,17 +69,10 @@ export class WpeditorComponent implements OnInit {
   }
 
   prepareFormData() {
-    var _tax_tree = this.wpcore.getTaxonomyTree('category');
-    var _categories = this.wphelper.treeSort(_tax_tree);
-    this.categories = _categories;
+    this.categories = this.taxo.getTaxonomyTree('category');
 
 
-
-    var _tax_tree = this.wpcore.getTaxonomyTree('post_tag');
-    var _post_tags = this.wphelper.treeSort(_tax_tree);
-    this.post_tags = _post_tags;
-
-    console.log("cats", _categories, _post_tags);
+    this.post_tags = this.taxo.getTaxonomyTree('post_tag');
   }
 
   ngOnInit(): void {
