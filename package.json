@@ -49,7 +49,7 @@
     "sortablejs": "^1.13.0",
     "tabulator-tables": "^4.9.3",
     "tslib": "^2.1.0",
-    "underscore": "^1.12.0",
+    "underscore": "^1.12.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
