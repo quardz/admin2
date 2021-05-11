@@ -36,7 +36,7 @@
     "blueimp-md5": "^2.18.0",
     "bootstrap": "^4.6.0",
     "compass-mixins": "^0.12.10",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "md5-typescript": "^1.0.5",
     "ngp-sort-pipe": "0.0.4",
     "ngx-chips": "^2.2.2",
